@@ -1,0 +1,99 @@
+# REQUIREMENTS.TXT - DÉPENDANCES PYTHON DU PAYMENT SERVICE
+# ============================================================================
+# Format: package==version
+# Commande pour installer: pip install -r requirements.txt
+
+# ============================================================================
+# FRAMEWORK WEB ET ASGI
+# ============================================================================
+
+# FastAPI: Framework web moderne et rapide pour les APIs
+# Documentation: https://fastapi.tiangolo.com/
+FastAPI==0.104.1
+
+# Uvicorn: Serveur ASGI léger et ultra-rapide
+# Utilisé pour exécuter l'application FastAPI
+Uvicorn==0.24.0
+
+# ============================================================================
+# ORM ET BASE DE DONNÉES
+# ============================================================================
+
+# SQLAlchemy: ORM Python puissant pour les bases de données
+# Permet de mapper les objets Python aux tables SQL
+SQLAlchemy==2.0.30
+
+# Psycopg2-binary: Driver PostgreSQL pour Python
+# Permet la connexion à PostgreSQL depuis Python
+psycopg2-binary==2.9.9
+
+# ============================================================================
+# VALIDATION ET SÉRIALISATION
+# ============================================================================
+
+# Pydantic: Validation de données avec Python et type hints
+# Utilisé pour valider les requêtes/réponses
+pydantic==2.5.0
+
+# Pydantic Settings: Gestion des configurations depuis .env
+pydantic-settings==2.1.0
+
+# ============================================================================
+# UTILITAIRES HTTP
+# ============================================================================
+
+# Requests: Bibliothèque pour faire des requêtes HTTP
+# Utilisé pour appeler les autres services
+Requests==2.31.0
+
+# HTTPX: Client HTTP asynchrone (alternative à Requests)
+httpx==0.25.1
+
+# ============================================================================
+# AUTHENTIFICATION & SÉCURITÉ
+# ============================================================================
+
+# PyJWT: Pour créer et valider les tokens JWT
+PyJWT==2.8.0
+
+# Python-jose: Implémentation JOSE (JSON Object Signing and Encryption)
+python-jose==3.3.0
+
+# Bcrypt: Algorithme bcrypt pour le hachage (>=4.1 pour Python 3.12)
+bcrypt>=4.1.0
+
+# ============================================================================
+# LOGGING ET MONITORING
+# ============================================================================
+
+# Python-json-logger: Format JSON pour les logs
+python-json-logger==2.0.7
+
+# ============================================================================
+# UTILITAIRES DIVERS
+# ============================================================================
+
+# Python-Dotenv: Charger les variables d'environnement depuis .env
+python-dotenv==1.0.0
+
+# ============================================================================
+# DÉVELOPPEMENT ET TESTS
+# ============================================================================
+
+# PyTest: Framework de test
+pytest==7.4.3
+
+# Pytest-asyncio: Support asyncio pour pytest
+pytest-asyncio==0.21.1
+
+# Coverage: Couverture de tests
+coverage==7.3.2
+
+# Black: Formatage automatique du code Python
+black==23.12.0
+
+# Flake8: Vérification du style de code
+flake8==6.1.0
+
+# Mypy: Vérification de type statique
+mypy==1.7.1

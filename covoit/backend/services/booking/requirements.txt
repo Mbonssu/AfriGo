@@ -1,0 +1,38 @@
+# REQUIREMENTS.TXT - DÉPENDANCES PYTHON DU BOOKING SERVICE
+# Format: package==version
+# Commande pour installer: pip install -r requirements.txt
+
+# Framework WEB et ASGI
+FastAPI==0.104.1
+Uvicorn==0.24.0
+
+# ORM ET BASE DE DONNÉES
+SQLAlchemy==2.0.30
+psycopg2-binary==2.9.9
+
+# VALIDATION ET SÉRIALISATION
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# UTILITAIRES HTTP
+Requests==2.31.0
+httpx==0.25.1
+
+# AUTHENTIFICATION & SÉCURITÉ
+PyJWT==2.8.0
+python-jose==3.3.0
+bcrypt>=4.1.0
+
+# LOGGING ET MONITORING
+python-json-logger==2.0.7
+
+# UTILITAIRES DIVERS
+python-dotenv==1.0.0
+
+# DÉVELOPPEMENT ET TESTS
+pytest==7.4.3
+pytest-asyncio==0.21.1
+coverage==7.3.2
+black==23.12.0
+flake8==6.1.0
+mypy==1.7.1
