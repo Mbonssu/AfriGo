@@ -395,8 +395,8 @@ class _UpcomingTripsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final query = const TripSearchQuery(from: '', to: '');
-    final tripsAsync = ref.watch(searchTripsProvider(query));
+    // Utiliser le nouveau provider qui charge tous les trajets actifs
+    final tripsAsync = ref.watch(allActiveTripsProvider);
 
     return tripsAsync.when(
       loading: () => const Center(
@@ -405,16 +405,29 @@ class _UpcomingTripsSection extends StatelessWidget {
           child: CircularProgressIndicator(color: AppColors.green),
         ),
       ),
-      error: (_, __) => const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text('Impossible de charger les trajets',
-            style: TextStyle(color: AppColors.gray400, fontSize: 13)),
-      ),
+      error: (error, __) {
+        debugPrint('❌ Erreur chargement trajets: $error');
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const Text('Impossible de charger les trajets',
+                  style: TextStyle(color: AppColors.gray400, fontSize: 13)),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => ref.invalidate(allActiveTripsProvider),
+                icon: const Icon(Icons.refresh_rounded, size: 16),
+                label: const Text('Réessayer'),
+              ),
+            ],
+          ),
+        );
+      },
       data: (trips) {
         if (trips.isEmpty) {
           return const Padding(
             padding: EdgeInsets.all(16),
-            child: Text('Aucun trajet disponible',
+            child: Text('Aucun trajet disponible pour le moment',
                 style: TextStyle(color: AppColors.gray400, fontSize: 13)),
           );
         }

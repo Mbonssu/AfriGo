@@ -78,3 +78,9 @@ final popularRoutesProvider =
   final repository = ref.watch(journeyRepositoryProvider);
   return repository.getPopularRoutes();
 });
+
+// Provider pour charger tous les trajets actifs (sans filtre)
+final allActiveTripsProvider = FutureProvider.autoDispose<List<AppTrip>>((ref) {
+  final repository = ref.watch(journeyRepositoryProvider);
+  return repository.getAllActiveTrips();
+});

@@ -31,6 +31,28 @@ class JourneyRepository {
     return data.cast<Map<String, dynamic>>();
   }
 
+  Future<List<AppTrip>> getAllActiveTrips() async {
+    try {
+      // Utiliser la route /search sans paramètres obligatoires
+      final response = await _client.get<Map<String, dynamic>>(
+        ApiEndpoints.searchTrips,
+        queryParameters: {
+          'from_city': '',
+          'to_city': '',
+          'sort_by': 'departure_time',
+        },
+      );
+
+      final trips = _asMapList(response['trips']);
+      return Future.wait(trips.map(_hydrateTrip));
+    } on AppException catch (error) {
+      if (error.statusCode == 404) {
+        return const [];
+      }
+      rethrow;
+    }
+  }
+
   Future<List<AppTrip>> searchTrips({
     required String from,
     required String to,
