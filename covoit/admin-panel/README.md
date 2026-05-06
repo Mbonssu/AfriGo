@@ -9,6 +9,7 @@ Le panel respecte la charte graphique de l'application mobile AfriGo :
 - **Couleur secondaire** : Prime/Orange (#EF9F27)
 - **Police** : Outfit (Google Fonts)
 - **Style** : Design épuré et moderne avec des cartes arrondies
+- **Thèmes** : Mode clair et mode sombre avec toggle
 
 ## 🚀 Installation
 
@@ -22,6 +23,31 @@ npm run dev
 # Build pour la production
 npm run build
 ```
+
+Le serveur de développement sera accessible sur http://localhost:3001/
+
+## 🌓 Mode Clair / Mode Sombre
+
+Le panel admin supporte les deux modes :
+- **Toggle manuel** : Bouton avec icône Lune/Soleil dans la sidebar et sur la page de login
+- **Préférence système** : Détecte automatiquement le mode préféré de l'utilisateur
+- **Persistance** : Le choix est sauvegardé dans localStorage
+
+### Test du mode sombre
+
+1. Ouvrez l'application dans votre navigateur
+2. Cliquez sur le bouton avec l'icône de lune (🌙) dans la sidebar
+3. L'interface bascule immédiatement en mode sombre
+4. Rechargez la page - le mode sombre est conservé
+5. Cliquez sur l'icône de soleil (☀️) pour revenir en mode clair
+
+### Débogage
+
+Si le toggle ne fonctionne pas :
+1. Ouvrez la console du navigateur (F12)
+2. Vérifiez les logs de débogage du ThemeContext
+3. Vérifiez que la classe `dark` est ajoutée à `<html>` quand le mode sombre est activé
+4. Vérifiez localStorage : `localStorage.getItem('admin_theme')`
 
 ## 📱 Fonctionnalités
 

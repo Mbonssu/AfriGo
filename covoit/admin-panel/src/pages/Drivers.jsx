@@ -11,7 +11,7 @@ export default function Drivers() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Chauffeurs</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Chauffeurs</h1>
         <p className="text-gray-600 mt-1">{mockDrivers.length} chauffeurs enregistrés</p>
       </div>
 
@@ -38,7 +38,7 @@ export default function Drivers() {
             </div>
 
             <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Car className="w-4 h-4" />
                 {driver.vehicle}
               </div>

@@ -4,7 +4,7 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Paramètres</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Paramètres</h1>
         <p className="text-gray-600 mt-1">Configuration de la plateforme</p>
       </div>
 
@@ -15,7 +15,7 @@ export default function Settings() {
             <div className="w-10 h-10 bg-green-light rounded-xl flex items-center justify-center">
               <Shield className="w-5 h-5 text-green" />
             </div>
-            <h3 className="font-bold text-gray-900">Général</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white">Général</h3>
           </div>
           <div className="space-y-4">
             <div>
@@ -45,19 +45,19 @@ export default function Settings() {
             <div className="w-10 h-10 bg-prime-bg rounded-xl flex items-center justify-center">
               <Bell className="w-5 h-5 text-prime" />
             </div>
-            <h3 className="font-bold text-gray-900">Notifications</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white">Notifications</h3>
           </div>
           <div className="space-y-4">
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-900">Notifications email</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Notifications email</span>
               <input type="checkbox" defaultChecked className="w-5 h-5 text-green rounded" />
             </label>
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-900">Notifications SMS</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Notifications SMS</span>
               <input type="checkbox" defaultChecked className="w-5 h-5 text-green rounded" />
             </label>
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-900">Alertes admin</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Alertes admin</span>
               <input type="checkbox" defaultChecked className="w-5 h-5 text-green rounded" />
             </label>
           </div>
@@ -69,7 +69,7 @@ export default function Settings() {
             <div className="w-10 h-10 bg-green-light rounded-xl flex items-center justify-center">
               <Database className="w-5 h-5 text-green" />
             </div>
-            <h3 className="font-bold text-gray-900">Paiements</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white">Paiements</h3>
           </div>
           <div className="space-y-4">
             <div>
@@ -85,7 +85,7 @@ export default function Settings() {
               <input type="number" defaultValue="500" className="input" />
             </div>
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-900">Mode test</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Mode test</span>
               <input type="checkbox" className="w-5 h-5 text-green rounded" />
             </label>
           </div>
@@ -97,7 +97,7 @@ export default function Settings() {
             <div className="w-10 h-10 bg-prime-bg rounded-xl flex items-center justify-center">
               <Mail className="w-5 h-5 text-prime" />
             </div>
-            <h3 className="font-bold text-gray-900">Configuration Email</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white">Configuration Email</h3>
           </div>
           <div className="space-y-4">
             <div>

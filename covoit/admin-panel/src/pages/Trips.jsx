@@ -11,7 +11,7 @@ export default function Trips() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Trajets</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Trajets</h1>
         <p className="text-gray-600 mt-1">{mockTrips.length} trajets enregistrés</p>
       </div>
 
@@ -22,8 +22,8 @@ export default function Trips() {
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-green" />
                 <div>
-                  <div className="font-bold text-gray-900">{trip.from} → {trip.to}</div>
-                  <div className="text-sm text-gray-600">{trip.driver}</div>
+                  <div className="font-bold text-gray-900 dark:text-white">{trip.from} → {trip.to}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{trip.driver}</div>
                 </div>
               </div>
               <span className={`badge ${
@@ -38,11 +38,11 @@ export default function Trips() {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Calendar className="w-4 h-4" />
                 {new Date(trip.date).toLocaleDateString('fr-FR')} · {trip.time}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <UsersIcon className="w-4 h-4" />
                 {trip.booked}/{trip.seats} places
               </div>

@@ -9,7 +9,7 @@ export default function Bookings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Réservations</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Réservations</h1>
         <p className="text-gray-600 mt-1">{mockBookings.length} réservations</p>
       </div>
 
@@ -28,10 +28,10 @@ export default function Bookings() {
           <tbody className="divide-y divide-gray-100/30">
             {mockBookings.map((booking) => (
               <tr key={booking.id} className="hover:bg-gray-50/50">
-                <td className="px-6 py-4 font-medium text-gray-900">{booking.passenger}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{booking.trip}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{booking.driver}</td>
-                <td className="px-6 py-4 text-sm font-semibold text-gray-900">{booking.seats}</td>
+                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{booking.passenger}</td>
+                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{booking.trip}</td>
+                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{booking.driver}</td>
+                <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{booking.seats}</td>
                 <td className="px-6 py-4">
                   <span className={`badge ${
                     booking.status === 'completed' ? 'badge-success' :
@@ -45,7 +45,7 @@ export default function Bookings() {
                      booking.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right font-semibold text-gray-900">{booking.amount} FCFA</td>
+                <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{booking.amount} FCFA</td>
               </tr>
             ))}
           </tbody>

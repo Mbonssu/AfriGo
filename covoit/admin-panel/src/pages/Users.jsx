@@ -28,7 +28,7 @@ export default function Users() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Utilisateurs</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Utilisateurs</h1>
           <p className="text-gray-600 mt-1">{mockUsers.length} utilisateurs au total</p>
         </div>
         <button className="btn-primary flex items-center gap-2">
@@ -97,7 +97,7 @@ export default function Users() {
                         </span>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">{user.name}</div>
+                        <div className="font-semibold text-gray-900 dark:text-white">{user.name}</div>
                         <div className="text-sm text-gray-600 flex items-center gap-1">
                           <Mail className="w-3 h-3" />
                           {user.email}
@@ -121,7 +121,7 @@ export default function Users() {
                       {user.status === 'active' ? 'Actif' : 'Suspendu'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-900">{user.trips}</td>
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{user.trips}</td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-600 flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
@@ -130,7 +130,7 @@ export default function Users() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button className="p-2 hover:bg-gray-50 rounded-btn">
-                      <MoreVertical className="w-5 h-5 text-gray-600" />
+                      <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                     </button>
                   </td>
                 </tr>

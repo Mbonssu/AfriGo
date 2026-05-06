@@ -13,7 +13,7 @@ export default function Payments() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Paiements</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Paiements</h1>
         <p className="text-gray-600 mt-1">{mockPayments.length} transactions</p>
       </div>
 
@@ -23,9 +23,9 @@ export default function Payments() {
             <div className="w-10 h-10 bg-green-light rounded-xl flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-green" />
             </div>
-            <span className="text-sm font-semibold text-gray-600">Complétés</span>
+            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">Complétés</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{totalAmount.toLocaleString()} FCFA</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalAmount.toLocaleString()} FCFA</div>
         </div>
 
         <div className="card p-6">
@@ -33,9 +33,9 @@ export default function Payments() {
             <div className="w-10 h-10 bg-prime-bg rounded-xl flex items-center justify-center">
               <Clock className="w-5 h-5 text-prime" />
             </div>
-            <span className="text-sm font-semibold text-gray-600">En attente</span>
+            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">En attente</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">
             {mockPayments.filter(p => p.status === 'pending').length}
           </div>
         </div>
@@ -45,9 +45,9 @@ export default function Payments() {
             <div className="w-10 h-10 bg-coral-light rounded-xl flex items-center justify-center">
               <XCircle className="w-5 h-5 text-coral" />
             </div>
-            <span className="text-sm font-semibold text-gray-600">Échoués</span>
+            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">Échoués</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">
             {mockPayments.filter(p => p.status === 'failed').length}
           </div>
         </div>
@@ -68,15 +68,15 @@ export default function Payments() {
           <tbody className="divide-y divide-gray-100/30">
             {mockPayments.map((payment) => (
               <tr key={payment.id} className="hover:bg-gray-50/50">
-                <td className="px-6 py-4 font-medium text-gray-900">{payment.user}</td>
+                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{payment.user}</td>
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <CreditCard className="w-4 h-4" />
                     {payment.method}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-sm font-mono text-gray-600">{payment.ref}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{payment.date}</td>
+                <td className="px-6 py-4 text-sm font-mono text-gray-600 dark:text-gray-400">{payment.ref}</td>
+                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{payment.date}</td>
                 <td className="px-6 py-4">
                   <span className={`badge ${
                     payment.status === 'completed' ? 'badge-success' :
@@ -88,7 +88,7 @@ export default function Payments() {
                      'Échoué'}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">
                   {payment.amount.toLocaleString()} FCFA
                 </td>
               </tr>

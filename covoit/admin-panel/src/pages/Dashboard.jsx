@@ -1,10 +1,10 @@
-import { Users, Car, Route, CreditCard, TrendingUp, TrendingDown } from 'lucide-react'
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { Users, Car, AlertTriangle, MessageSquare, TrendingUp, TrendingDown, ShieldCheck, Scale } from 'lucide-react'
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 // Données simulées
 const stats = [
   { 
-    name: 'Utilisateurs', 
+    name: 'Utilisateurs actifs', 
     value: '2,847', 
     change: '+12.5%', 
     trend: 'up', 
@@ -12,47 +12,60 @@ const stats = [
     color: 'green'
   },
   { 
-    name: 'Chauffeurs actifs', 
-    value: '342', 
-    change: '+8.2%', 
+    name: 'Signalements', 
+    value: '23', 
+    change: '-8.2%', 
+    trend: 'down', 
+    icon: AlertTriangle,
+    color: 'coral'
+  },
+  { 
+    name: 'KYC en attente', 
+    value: '12', 
+    change: '+3.1%', 
     trend: 'up', 
-    icon: Car,
+    icon: ShieldCheck,
     color: 'prime'
   },
   { 
-    name: 'Trajets ce mois', 
-    value: '1,234', 
-    change: '-3.1%', 
+    name: 'Litiges actifs', 
+    value: '8', 
+    change: '-15.3%', 
     trend: 'down', 
-    icon: Route,
+    icon: Scale,
     color: 'green'
   },
-  { 
-    name: 'Revenus (FCFA)', 
-    value: '12.4M', 
-    change: '+15.3%', 
-    trend: 'up', 
-    icon: CreditCard,
-    color: 'prime'
-  },
 ]
 
-const chartData = [
-  { name: 'Lun', trajets: 45, revenus: 180 },
-  { name: 'Mar', trajets: 52, revenus: 210 },
-  { name: 'Mer', trajets: 48, revenus: 195 },
-  { name: 'Jeu', trajets: 61, revenus: 245 },
-  { name: 'Ven', trajets: 73, revenus: 290 },
-  { name: 'Sam', trajets: 89, revenus: 355 },
-  { name: 'Dim', trajets: 67, revenus: 270 },
+const userGrowthData = [
+  { name: 'Jan', users: 1200 },
+  { name: 'Fév', users: 1450 },
+  { name: 'Mar', users: 1680 },
+  { name: 'Avr', users: 2100 },
+  { name: 'Mai', users: 2847 },
 ]
 
-const recentTrips = [
-  { id: 1, from: 'Yaoundé', to: 'Douala', driver: 'Jean Kamga', status: 'completed', amount: '4500' },
-  { id: 2, from: 'Douala', to: 'Bafoussam', driver: 'Marie Ngo', status: 'ongoing', amount: '6000' },
-  { id: 3, from: 'Yaoundé', to: 'Kribi', driver: 'Paul Mbida', status: 'active', amount: '5500' },
-  { id: 4, from: 'Douala', to: 'Limbé', driver: 'Sophie Talla', status: 'completed', amount: '3000' },
-  { id: 5, from: 'Yaoundé', to: 'Ngaoundéré', driver: 'Eric Fouda', status: 'active', amount: '12000' },
+const reportsByType = [
+  { name: 'Conduite', value: 35, color: '#D85A30' },
+  { name: 'Comportement', value: 28, color: '#EF9F27' },
+  { name: 'Technique', value: 20, color: '#1D9E75' },
+  { name: 'Autre', value: 17, color: '#888780' },
+]
+
+const kycStats = [
+  { name: 'Lun', approved: 5, rejected: 2 },
+  { name: 'Mar', approved: 8, rejected: 1 },
+  { name: 'Mer', approved: 6, rejected: 3 },
+  { name: 'Jeu', approved: 10, rejected: 2 },
+  { name: 'Ven', approved: 12, rejected: 1 },
+]
+
+const recentActivity = [
+  { id: 1, type: 'kyc', user: 'Jean Kamga', action: 'Soumission KYC', time: 'Il y a 5 min', status: 'pending' },
+  { id: 2, type: 'report', user: 'Marie Ngo', action: 'Signalement: Conduite dangereuse', time: 'Il y a 12 min', status: 'urgent' },
+  { id: 3, type: 'suggestion', user: 'Paul Mbida', action: 'Nouvelle suggestion', time: 'Il y a 23 min', status: 'info' },
+  { id: 4, type: 'dispute', user: 'Sophie Talla', action: 'Litige: Remboursement', time: 'Il y a 45 min', status: 'warning' },
+  { id: 5, type: 'kyc', user: 'Eric Fouda', action: 'KYC approuvé', time: 'Il y a 1h', status: 'success' },
 ]
 
 export default function Dashboard() {
@@ -64,10 +77,14 @@ export default function Dashboard() {
           <div key={stat.name} className="card p-6">
             <div className="flex items-center justify-between mb-4">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                stat.color === 'green' ? 'bg-green-light' : 'bg-prime-bg'
+                stat.color === 'green' ? 'bg-green-light' :
+                stat.color === 'coral' ? 'bg-coral-light' :
+                'bg-prime-bg'
               }`}>
                 <stat.icon className={`w-6 h-6 ${
-                  stat.color === 'green' ? 'text-green' : 'text-prime'
+                  stat.color === 'green' ? 'text-green' :
+                  stat.color === 'coral' ? 'text-coral' :
+                  'text-prime'
                 }`} />
               </div>
               <div className={`flex items-center gap-1 text-sm font-semibold ${
@@ -81,19 +98,19 @@ export default function Dashboard() {
                 {stat.change}
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</h3>
-            <p className="text-sm text-gray-600">{stat.name}</p>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{stat.name}</p>
           </div>
         ))}
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Trajets par jour */}
+        {/* Croissance utilisateurs */}
         <div className="card p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Trajets cette semaine</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Croissance des utilisateurs</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={chartData}>
+            <LineChart data={userGrowthData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#D3D1C7" />
               <XAxis dataKey="name" stroke="#888780" style={{ fontSize: '12px' }} />
               <YAxis stroke="#888780" style={{ fontSize: '12px' }} />
@@ -107,7 +124,7 @@ export default function Dashboard() {
               />
               <Line 
                 type="monotone" 
-                dataKey="trajets" 
+                dataKey="users" 
                 stroke="#1D9E75" 
                 strokeWidth={2}
                 dot={{ fill: '#1D9E75', r: 4 }}
@@ -116,11 +133,35 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Revenus par jour */}
+        {/* Signalements par type */}
         <div className="card p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Revenus cette semaine (x1000 FCFA)</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Signalements par type</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={chartData}>
+            <PieChart>
+              <Pie
+                data={reportsByType}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {reportsByType.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Vérifications KYC */}
+        <div className="card p-6 lg:col-span-2">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Vérifications KYC cette semaine</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={kycStats}>
               <CartesianGrid strokeDasharray="3 3" stroke="#D3D1C7" />
               <XAxis dataKey="name" stroke="#888780" style={{ fontSize: '12px' }} />
               <YAxis stroke="#888780" style={{ fontSize: '12px' }} />
@@ -132,56 +173,42 @@ export default function Dashboard() {
                   fontSize: '12px'
                 }} 
               />
-              <Bar dataKey="revenus" fill="#EF9F27" radius={[8, 8, 0, 0]} />
+              <Legend />
+              <Bar dataKey="approved" fill="#1D9E75" name="Approuvés" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="rejected" fill="#D85A30" name="Rejetés" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Recent Trips */}
+      {/* Recent Activity */}
       <div className="card">
-        <div className="px-6 py-4 border-b border-gray-100/30">
-          <h3 className="text-lg font-bold text-gray-900">Trajets récents</h3>
+        <div className="px-6 py-4 border-b border-gray-100/30 dark:border-gray-700/30">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Activité récente</h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-100/30">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Trajet</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Chauffeur</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Statut</th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Montant</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100/30">
-              {recentTrips.map((trip) => (
-                <tr key={trip.id} className="hover:bg-gray-50/50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                      {trip.from}
-                      <span className="text-gray-400">→</span>
-                      {trip.to}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{trip.driver}</td>
-                  <td className="px-6 py-4">
-                    <span className={`badge ${
-                      trip.status === 'completed' ? 'badge-success' :
-                      trip.status === 'ongoing' ? 'badge-warning' :
-                      'badge-gray'
-                    }`}>
-                      {trip.status === 'completed' ? 'Terminé' :
-                       trip.status === 'ongoing' ? 'En cours' :
-                       'Actif'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
-                    {trip.amount} FCFA
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="divide-y divide-gray-100/30 dark:divide-gray-700/30">
+          {recentActivity.map((activity) => (
+            <div key={activity.id} className="px-6 py-4 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 flex items-center gap-4">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                activity.status === 'urgent' ? 'bg-coral-light dark:bg-coral/20' :
+                activity.status === 'warning' ? 'bg-prime-bg dark:bg-prime/20' :
+                activity.status === 'success' ? 'bg-green-light dark:bg-green/20' :
+                'bg-gray-100 dark:bg-gray-700'
+              }`}>
+                {activity.type === 'kyc' && <ShieldCheck className={`w-5 h-5 ${
+                  activity.status === 'success' ? 'text-green' : 'text-prime'
+                }`} />}
+                {activity.type === 'report' && <AlertTriangle className="w-5 h-5 text-coral" />}
+                {activity.type === 'suggestion' && <MessageSquare className="w-5 h-5 text-gray-600 dark:text-gray-400" />}
+                {activity.type === 'dispute' && <Scale className="w-5 h-5 text-prime" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{activity.action}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{activity.user}</p>
+              </div>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
