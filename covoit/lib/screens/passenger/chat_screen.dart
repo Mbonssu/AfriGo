@@ -7,10 +7,12 @@ import '../../core/network/api_client_provider.dart';
 import '../../core/network/websocket_service.dart';
 import '../../data/providers/chat_providers.dart';
 import '../../data/providers/journey_providers.dart';
+import '../../widgets/user_avatar.dart';
 
 /// Le chat n'est accessible que si [tripConfirmed] est true.
 class ChatScreen extends ConsumerStatefulWidget {
   final String driverName;
+  final String? driverPhotoUrl;
   final bool isPrime;
   final bool tripConfirmed;
   final String? tripId;
@@ -22,6 +24,7 @@ class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({
     super.key,
     required this.driverName,
+    this.driverPhotoUrl,
     required this.isPrime,
     this.tripConfirmed = false,
     this.tripId,
@@ -228,17 +231,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
+            PrimeUserAvatar(
+              photoUrl: widget.driverPhotoUrl,
+              initials: initials,
               radius: 18,
-              backgroundColor:
-                  widget.isPrime ? AppColors.primeBg : AppColors.greenLight,
-              child: Text(initials,
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: widget.isPrime
-                          ? AppColors.primeDark
-                          : AppColors.greenDark)),
+              isPrime: widget.isPrime,
             ),
             const SizedBox(width: 10),
             Column(

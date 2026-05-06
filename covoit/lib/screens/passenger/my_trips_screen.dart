@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../app_theme.dart';
 import '../../data/models/app_booking_trip.dart';
 import '../../data/providers/journey_providers.dart';
+import '../../widgets/user_avatar.dart';
 import 'boarding_pass_screen.dart';
 import 'chat_screen.dart';
 import 'rating_screen.dart';
@@ -256,17 +257,11 @@ class _TripCard extends StatelessWidget {
             // Chauffeur
             Row(
               children: [
-                CircleAvatar(
+                PrimeUserAvatar(
+                  photoUrl: driver.profilePictureUrl,
+                  initials: initials,
                   radius: 16,
-                  backgroundColor:
-                      driver.isPrime ? AppColors.primeBg : AppColors.greenLight,
-                  child: Text(initials,
-                      style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: driver.isPrime
-                              ? AppColors.primeDark
-                              : AppColors.greenDark)),
+                  isPrime: driver.isPrime,
                 ),
                 const SizedBox(width: 8),
                 Expanded(

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app_theme.dart';
 import '../../data/models/app_trip_passenger.dart';
 import '../../data/providers/journey_providers.dart';
+import '../../widgets/user_avatar.dart';
 import 'driver_boarding_screen.dart';
 
 class DriverPassengersScreen extends ConsumerWidget {
@@ -178,14 +179,10 @@ class _PassengerCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                UserAvatar(
+                  photoUrl: passenger.photoUrl,
+                  initials: passenger.initials,
                   radius: 22,
-                  backgroundColor: AppColors.greenLight,
-                  child: Text(passenger.initials,
-                      style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.greenDark)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

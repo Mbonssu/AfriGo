@@ -6,6 +6,7 @@ import '../../app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../data/models/app_trip.dart';
 import '../../data/providers/journey_providers.dart';
+import '../../widgets/user_avatar.dart';
 import 'trip_detail_screen.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -587,18 +588,11 @@ class _SearchResultCard extends StatelessWidget {
               const Divider(height: 16),
               Row(
                 children: [
-                  CircleAvatar(
+                  PrimeUserAvatar(
+                    photoUrl: trip.driver.profilePictureUrl,
+                    initials: initials.isEmpty ? 'CH' : initials,
                     radius: 18,
-                    backgroundColor:
-                        trip.driver.isPrime ? AppColors.primeBg : AppColors.greenLight,
-                    child: Text(
-                      initials.isEmpty ? 'CH' : initials,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: trip.driver.isPrime ? AppColors.primeDark : AppColors.greenDark,
-                      ),
-                    ),
+                    isPrime: trip.driver.isPrime,
                   ),
                   const SizedBox(width: 10),
                   Expanded(

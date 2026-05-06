@@ -11,12 +11,14 @@ import '../data/providers/journey_providers.dart';
 import '../data/providers/tracking_providers.dart';
 import '../data/providers/user_providers.dart';
 import '../data/models/app_trip.dart';
+import '../widgets/user_avatar.dart';
 import 'passenger/chat_screen.dart';
 
 class TripTrackingScreen extends ConsumerStatefulWidget {
   final String from;
   final String to;
   final String driverName;
+  final String? driverPhotoUrl;
   final bool isPrime;
   final bool isDriver;
   final String? tripId;
@@ -26,6 +28,7 @@ class TripTrackingScreen extends ConsumerStatefulWidget {
     required this.from,
     required this.to,
     required this.driverName,
+    this.driverPhotoUrl,
     this.isPrime = false,
     this.isDriver = false,
     this.tripId,
@@ -348,18 +351,11 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
                   // Driver/passenger info
                   Card(
                     child: ListTile(
-                      leading: CircleAvatar(
+                      leading: PrimeUserAvatar(
+                        photoUrl: widget.driverPhotoUrl,
+                        initials: initials,
                         radius: 22,
-                        backgroundColor: widget.isPrime
-                            ? AppColors.primeBg
-                            : AppColors.greenLight,
-                        child: Text(initials,
-                            style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: widget.isPrime
-                                    ? AppColors.primeDark
-                                    : AppColors.greenDark)),
+                        isPrime: widget.isPrime,
                       ),
                       title: Text(
                         widget.isDriver

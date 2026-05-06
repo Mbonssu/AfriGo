@@ -32,12 +32,14 @@ class UserAvatar extends StatelessWidget {
       // Si l'URL commence par /uploads/, ajouter le préfixe /api/users
       if (photoUrl!.startsWith('/uploads/')) {
         imageUrl = '${ApiEndpoints.gatewayUrl}/api/users$photoUrl';
+      } else if (photoUrl!.startsWith('http://') || photoUrl!.startsWith('https://')) {
+        // URL complète déjà fournie
+        imageUrl = photoUrl;
       } else {
+        // Autre cas: ajouter le gateway URL
         imageUrl = '${ApiEndpoints.gatewayUrl}$photoUrl';
       }
     }
-
-    debugPrint('UserAvatar: photoUrl=$photoUrl, fullUrl=$imageUrl');
 
     final avatar = CircleAvatar(
       radius: radius,
@@ -47,8 +49,7 @@ class UserAvatar extends StatelessWidget {
           : null,
       onBackgroundImageError: imageUrl != null
           ? (exception, stackTrace) {
-              debugPrint('Error loading avatar image: $exception');
-              debugPrint('Stack trace: $stackTrace');
+              debugPrint('⚠️ Erreur chargement avatar: $imageUrl');
             }
           : null,
       child: photoUrl == null || photoUrl!.isEmpty

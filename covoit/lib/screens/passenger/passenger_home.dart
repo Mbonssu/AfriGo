@@ -433,6 +433,7 @@ class _UpcomingTripsSection extends StatelessWidget {
                 time: timeStr,
                 date: dateStr,
                 driverName: trip.driver.fullName,
+                driverPhotoUrl: trip.driver.profilePictureUrl,
                 isPrime: trip.driver.isPrime,
                 price: trip.pricePerSeat.toString(),
                 seats: trip.availableSeats,
@@ -645,6 +646,7 @@ class _TripCard extends StatelessWidget {
   final String time;
   final String date;
   final String driverName;
+  final String? driverPhotoUrl;
   final bool isPrime;
   final String price;
   final int seats;
@@ -657,6 +659,7 @@ class _TripCard extends StatelessWidget {
     required this.time,
     required this.date,
     required this.driverName,
+    this.driverPhotoUrl,
     required this.isPrime,
     required this.price,
     required this.seats,
@@ -676,16 +679,11 @@ class _TripCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                PrimeUserAvatar(
+                  photoUrl: driverPhotoUrl,
+                  initials: initials,
                   radius: 20,
-                  backgroundColor:
-                      isPrime ? AppColors.primeBg : AppColors.greenLight,
-                  child: Text(initials,
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color:
-                              isPrime ? AppColors.primeDark : AppColors.greenDark)),
+                  isPrime: isPrime,
                 ),
                 const SizedBox(width: 10),
                 Expanded(

@@ -6,6 +6,7 @@ import '../../app_theme.dart';
 import '../../data/models/app_trip.dart';
 import '../../data/providers/journey_providers.dart';
 import '../../data/providers/user_providers.dart';
+import '../../widgets/user_avatar.dart';
 import '../notifications_screen.dart';
 import '../profile_screen.dart';
 import 'driver_passengers_screen.dart';
@@ -243,17 +244,12 @@ class _DriverHomeTabBody extends ConsumerWidget {
               // Avatar fixe à droite
               Padding(
                 padding: const EdgeInsets.only(right: 16),
-                child: CircleAvatar(
+                child: UserAvatar(
+                  photoUrl: profile?.profilePictureUrl,
+                  initials: profile?.initials ?? '?',
                   radius: 18,
                   backgroundColor: Colors.white.withValues(alpha: 0.25),
-                  child: Text(
-                    profile?.initials ?? '?',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
+                  textColor: Colors.white,
                 ),
               ),
             ],

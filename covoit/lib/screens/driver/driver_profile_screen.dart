@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app_theme.dart';
 import '../../data/providers/user_providers.dart';
+import '../../widgets/user_avatar.dart';
 import '../passenger/chat_screen.dart';
 import '../passenger/rating_screen.dart';
 
@@ -81,17 +82,13 @@ class DriverProfileScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 40),
-                      CircleAvatar(
+                      PrimeUserAvatar(
+                        photoUrl: userProfile?.profilePictureUrl,
+                        initials: initials,
                         radius: 48,
+                        isPrime: displayIsPrime,
                         backgroundColor: Colors.white.withOpacity(0.25),
-                        child: Text(
-                          initials,
-                          style: const TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
+                        textColor: Colors.white,
                       ),
                       const SizedBox(height: 12),
                       Row(

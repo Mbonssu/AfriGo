@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app_theme.dart';
 import '../../data/providers/journey_providers.dart';
+import '../../widgets/user_avatar.dart';
 
 class RatingScreen extends ConsumerStatefulWidget {
   final String driverName;
+  final String? driverPhotoUrl;
   final bool isPrime;
   final String? bookingId;
   final String? tripSummary;
@@ -13,6 +15,7 @@ class RatingScreen extends ConsumerStatefulWidget {
   const RatingScreen({
     super.key,
     required this.driverName,
+    this.driverPhotoUrl,
     required this.isPrime,
     this.bookingId,
     this.tripSummary,
@@ -49,14 +52,11 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
         child: Column(
           children: [
             // Driver info
-            CircleAvatar(
+            PrimeUserAvatar(
+              photoUrl: widget.driverPhotoUrl,
+              initials: initials,
               radius: 40,
-              backgroundColor: widget.isPrime ? AppColors.primeBg : AppColors.greenLight,
-              child: Text(initials,
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      color: widget.isPrime ? AppColors.primeDark : AppColors.greenDark)),
+              isPrime: widget.isPrime,
             ),
             const SizedBox(height: 12),
             Text(widget.driverName,

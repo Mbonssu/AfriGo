@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app_theme.dart';
 import '../../data/providers/forum_providers.dart';
 import '../../data/providers/journey_providers.dart';
+import '../../widgets/user_avatar.dart';
 
 class PrimeForumScreen extends ConsumerStatefulWidget {
   const PrimeForumScreen({super.key});
@@ -249,18 +250,12 @@ class _PostCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                UserAvatar(
+                  photoUrl: null, // Forum posts don't have photos yet
+                  initials: avatar,
                   radius: 18,
-                  backgroundColor: isPlatform
-                      ? AppColors.green
-                      : AppColors.primeBg,
-                  child: Text(avatar,
-                      style: TextStyle(
-                          fontSize: avatar.length > 2 ? 8 : 10,
-                          fontWeight: FontWeight.w800,
-                          color: isPlatform
-                              ? Colors.white
-                              : AppColors.primeDark)),
+                  backgroundColor: isPlatform ? AppColors.green : AppColors.primeBg,
+                  textColor: isPlatform ? Colors.white : AppColors.primeDark,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
