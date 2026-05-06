@@ -552,6 +552,55 @@ async def book_seat(
         )
 
 
+# ============================================================================
+# ENDPOINT 7b : LIBÉRER DES PLACES (APRÈS ANNULATION)
+# ============================================================================
+
+@router.post(
+    "/{trip_id}/release",
+    status_code=status.HTTP_200_OK,
+    summary="Libérer des places dans un trajet",
+)
+async def release_seats(
+    trip_id: UUID,
+    passenger_count: int = 1,
+    db: Session = Depends(get_db)
+):
+    """
+    Libère une ou plusieurs places dans un trajet (après annulation).
+    """
+    try:
+        logger.info(f"Libération {passenger_count} place(s) trajet {trip_id}")
+        
+        success = TripService.release_seats(
+            db=db,
+            trip_id=trip_id,
+            passenger_count=passenger_count
+        )
+        
+        logger.info(f"Libération réussie pour trajet {trip_id}")
+        
+        return {
+            "success": True,
+            "message": f"{passenger_count} place(s) libérée(s) avec succès",
+            "trip_id": str(trip_id)
+        }
+    
+    except ValueError as e:
+        logger.error(f"Erreur métier: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    
+    except Exception as e:
+        logger.error(f"Erreur serveur: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la libération"
+        )
+
+
 # Note pour les développeurs:
 # Ce routeur est enregistré dans main.py avec: app.include_router(router)
 # Les routes complètes deviennent: /trips/, /trips/{trip_id}, /trips/search, etc.

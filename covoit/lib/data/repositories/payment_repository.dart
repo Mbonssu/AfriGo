@@ -49,13 +49,14 @@ class PaymentRepository {
         // Retourner une réponse simulée de paiement réussi
         return AppPaymentInitiation(
           paymentId: 'SIM-${DateTime.now().millisecondsSinceEpoch}',
+          providerPaymentId: 'TXN-SIM-${DateTime.now().millisecondsSinceEpoch}',
           status: 'success',
+          providerStatus: 'SUCCESSFUL',
           message: '✅ Paiement simulé avec succès (Mode développement)',
           amount: amount,
           paymentMethod: paymentMethod,
           paymentType: paymentType,
           phoneNumber: phoneNumber,
-          transactionId: 'TXN-SIM-${DateTime.now().millisecondsSinceEpoch}',
         );
       }
       rethrow;
@@ -78,9 +79,10 @@ class PaymentRepository {
         return AppPaymentVerification(
           paymentId: paymentId,
           status: 'completed',
+          providerStatus: 'SUCCESSFUL',
+          isFinal: true,
           message: '✅ Paiement vérifié (Mode développement)',
-          transactionId: 'TXN-$paymentId',
-          paidAt: DateTime.now(),
+          operatorTransactionId: 'TXN-$paymentId',
         );
       }
       rethrow;

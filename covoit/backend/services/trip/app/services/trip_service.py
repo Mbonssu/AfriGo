@@ -520,6 +520,45 @@ class TripService:
         return True
 
     @staticmethod
+    def release_seats(db: Session, trip_id: UUID, passenger_count: int = 1) -> bool:
+        """
+        Libère des places dans un trajet (après annulation de réservation).
+        
+        Args:
+            db: Session SQLAlchemy
+            trip_id: UUID du trajet
+            passenger_count: Nombre de places à libérer (défaut 1)
+        
+        Returns:
+            bool: True si libération réussie
+        """
+        
+        logger.info(f"Libération {passenger_count} place(s) trajet {trip_id}")
+        
+        # Récupérer le trajet
+        trip = db.query(Trip).filter(Trip.id == trip_id).first()
+        
+        # Vérifier qu'il existe
+        if not trip:
+            logger.warning(f"Trajet non trouvé: {trip_id}")
+            raise ValueError(f"Trajet avec ID {trip_id} non trouvé")
+        
+        # Incrémenter les places disponibles
+        trip.available_seats += passenger_count
+        
+        # Ne pas dépasser le total de places
+        if trip.available_seats > trip.total_seats:
+            logger.warning(f"Places disponibles ({trip.available_seats}) > total ({trip.total_seats}), ajustement")
+            trip.available_seats = trip.total_seats
+        
+        # Sauvegarder
+        db.commit()
+        
+        logger.info(f"Places libérées, places disponibles: {trip.available_seats}")
+        
+        return True
+
+    @staticmethod
     def get_trips_by_driver(db: Session, driver_id: UUID) -> list:
         """Récupère tous les trajets d'un chauffeur."""
         logger.info(f"Récupération trajets du chauffeur {driver_id}")
