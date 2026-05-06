@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # App
-    APP_NAME: str = "Covoit Auth Service"
+    APP_NAME: str = "AfriGo Auth Service"
     DEBUG: bool = False
     
     # Database

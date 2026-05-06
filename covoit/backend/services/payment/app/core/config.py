@@ -38,16 +38,32 @@ class Settings(BaseSettings):
         description="Base URL de l'API Monetbil Collections v1",
     )
     MONETBIL_SERVICE_KEY: str = Field(
-        default="",
+        default="LIXGD0SbK4MIFyAu4TmohsuSXvXW0heS",
         description="Clé de service Monetbil récupérée depuis le dashboard",
     )
+    MONETBIL_SERVICE_SECRET: str = Field(
+        default="nbp2S00FgdspHbv4LOSWt0VroWGllTqcy0wj8tu1qDIBwtQ4XyGkrLNYEpJk79V1",
+        description="Secret de service Monetbil pour la vérification des signatures",
+    )
     MONETBIL_NOTIFY_URL: str = Field(
-        default="",
+        default="http://192.168.45.54:8000/api/payments/notify/monetbil",
         description="URL publique appelée par Monetbil pour les notifications serveur",
     )
     MONETBIL_RETURN_URL: str = Field(
-        default="",
-        description="URL de retour optionnelle après paiement Monetbil",
+        default="afrigo://payment/success",
+        description="URL de retour après paiement réussi (deep link)",
+    )
+    MONETBIL_SUCCESS_URL: str = Field(
+        default="afrigo://payment/success",
+        description="URL de redirection après paiement réussi (deep link)",
+    )
+    MONETBIL_CANCEL_URL: str = Field(
+        default="afrigo://payment/cancelled",
+        description="URL de redirection si l'utilisateur annule le paiement (deep link)",
+    )
+    MONETBIL_FAILURE_URL: str = Field(
+        default="afrigo://payment/failed",
+        description="URL de redirection après échec du paiement (deep link)",
     )
     MONETBIL_COUNTRY: str = Field(
         default="CM",

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
 import '../../app_theme.dart';
 import '../../core/errors/exceptions.dart';
@@ -7,6 +8,8 @@ import '../../data/providers/auth_providers.dart';
 import '../driver/driver_home.dart';
 import '../passenger/passenger_home.dart';
 import 'login_screen.dart';
+
+final logger = Logger('RegisterScreen');
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -78,8 +81,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           lastName: lastName,
           phone: _phoneCtrl.text.trim(),
         );
-      } catch (_) {
+        logger.info('✅ Profil utilisateur mis à jour avec succès');
+      } catch (e) {
         // L'inscription doit rester réussie même si le profil enrichi échoue.
+        logger.warning('⚠️ Échec de la mise à jour du profil : $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Inscription réussie. Vous pourrez compléter votre profil plus tard.'),
+              backgroundColor: AppColors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
       }
 
       if (!mounted) return;

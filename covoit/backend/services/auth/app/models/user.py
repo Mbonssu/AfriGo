@@ -20,6 +20,8 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     role = Column(String, nullable=False, default=UserRole.PASSENGER.value)
     is_active = Column(Boolean, default=True)
+    reset_token = Column(String, nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

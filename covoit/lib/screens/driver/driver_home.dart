@@ -234,11 +234,29 @@ class _DriverHomeTabBody extends ConsumerWidget {
                 ),
               ),
             ),
-            title: Text(isPrime ? '237COVOIT PRIME' : '237COVOIT',
-                style: TextStyle(
+            title: Text(isPrime ? 'AfriGo PRIME' : 'AfriGo',
+                style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
                     fontSize: 18)),
+            actions: [
+              // Avatar fixe à droite
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.white.withValues(alpha: 0.25),
+                  child: Text(
+                    profile?.initials ?? '?',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           SliverToBoxAdapter(
             child: Padding(

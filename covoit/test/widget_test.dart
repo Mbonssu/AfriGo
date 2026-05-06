@@ -20,6 +20,6 @@ void main() {
     );
 
     // Verify that the splash screen displays the app name
-    expect(find.text('COVOIT'), findsOneWidget);
+    expect(find.text('AfriGo'), findsOneWidget);
   });
 }

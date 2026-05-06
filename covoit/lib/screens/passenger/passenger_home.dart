@@ -179,15 +179,6 @@ class _HomeTab extends ConsumerWidget {
                                         )),
                               ],
                             ),
-                            CircleAvatar(
-                              radius: 22,
-                              backgroundColor: Colors.white.withOpacity(0.24),
-                              child: Text(initials,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14)),
-                            ),
                           ],
                         ),
                       ],
@@ -197,6 +188,24 @@ class _HomeTab extends ConsumerWidget {
               ),
             ),
             title: const Text('AfriGo'),
+            actions: [
+              // Avatar fixe à droite
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.white.withValues(alpha: 0.25),
+                  child: Text(
+                    initials,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           if (!isAuthenticated)
             SliverToBoxAdapter(
@@ -358,7 +367,7 @@ class _HomeTab extends ConsumerWidget {
 
                   // Popular routes (dynamiques)
                   SizedBox(
-                    height: 90,
+                    height: 105,
                     child: _PopularRoutesRow(ref: ref),
                   ),
 
@@ -513,10 +522,10 @@ class _PopularRoutesRow extends StatelessWidget {
   const _PopularRoutesRow({required this.ref});
 
   static const _fallback = [
-    {'from': 'Douala', 'to': 'Yaoundé', 'avg_price': 3500},
-    {'from': 'Yaoundé', 'to': 'Bafoussam', 'avg_price': 2500},
-    {'from': 'Douala', 'to': 'Limbé', 'avg_price': 1500},
-    {'from': 'Yaoundé', 'to': 'Bertoua', 'avg_price': 4000},
+    {'from': 'Douala', 'to': 'Yaoundé', 'avg_price': 3500, 'trip_count': 0},
+    {'from': 'Yaoundé', 'to': 'Bafoussam', 'avg_price': 2500, 'trip_count': 0},
+    {'from': 'Douala', 'to': 'Limbé', 'avg_price': 1500, 'trip_count': 0},
+    {'from': 'Yaoundé', 'to': 'Bertoua', 'avg_price': 4000, 'trip_count': 0},
   ];
 
   @override
@@ -531,6 +540,7 @@ class _PopularRoutesRow extends StatelessWidget {
                   from: r['from'] as String,
                   to: r['to'] as String,
                   price: '${r['avg_price']}',
+                  tripCount: r['trip_count'] as int,
                 ))
             .toList(),
       ),
@@ -541,6 +551,7 @@ class _PopularRoutesRow extends StatelessWidget {
                   from: r['from'] as String,
                   to: r['to'] as String,
                   price: '${r['avg_price']}',
+                  tripCount: r['trip_count'] as int,
                 ))
             .toList(),
       ),
@@ -553,6 +564,7 @@ class _PopularRoutesRow extends StatelessWidget {
                     from: (r['from'] ?? '') as String,
                     to: (r['to'] ?? '') as String,
                     price: '${r['avg_price'] ?? 0}',
+                    tripCount: (r['trip_count'] ?? 0) as int,
                   ))
               .toList(),
         );
@@ -565,11 +577,13 @@ class _RouteChip extends StatelessWidget {
   final String from;
   final String to;
   final String price;
+  final int tripCount;
 
   const _RouteChip({
     required this.from,
     required this.to,
     required this.price,
+    required this.tripCount,
   });
 
   @override
@@ -612,6 +626,17 @@ class _RouteChip extends StatelessWidget {
           Text('à partir de $price FCFA',
               style: const TextStyle(
                   fontSize: 11, color: AppColors.green, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 2),
+          Text(
+            tripCount > 0 
+                ? '$tripCount voyage${tripCount > 1 ? 's' : ''} disponible${tripCount > 1 ? 's' : ''}'
+                : 'Aucun voyage',
+            style: TextStyle(
+              fontSize: 10,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );

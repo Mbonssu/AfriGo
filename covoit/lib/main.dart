@@ -39,7 +39,7 @@ class CovoitApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
-      title: '237COVOIT',
+      title: 'AfriGo',
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
       theme: AppTheme.light(),

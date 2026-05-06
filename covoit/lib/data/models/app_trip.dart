@@ -1,4 +1,5 @@
 import 'app_driver_profile.dart';
+import '../../features/trip/models/waypoint.dart';
 
 class AppTrip {
   final String id;
@@ -14,6 +15,7 @@ class AppTrip {
   final String? vehicleId;
   final String status;
   final List<String> comfortOptions;
+  final List<Waypoint> waypoints;
   final AppDriverProfile driver;
 
   const AppTrip({
@@ -30,6 +32,7 @@ class AppTrip {
     this.vehicleId,
     required this.status,
     required this.comfortOptions,
+    this.waypoints = const [],
     required this.driver,
   });
 
@@ -54,6 +57,9 @@ class AppTrip {
       comfortOptions: ((json['comfort_options'] as List?) ?? const [])
           .map((item) => item.toString())
           .where((item) => item.isNotEmpty)
+          .toList(),
+      waypoints: ((json['waypoints'] as List?) ?? const [])
+          .map((item) => Waypoint.fromJson(item as Map<String, dynamic>))
           .toList(),
       driver: driver,
     );

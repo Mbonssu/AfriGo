@@ -7,6 +7,7 @@ import '../../data/providers/auth_providers.dart';
 import '../driver/driver_home.dart';
 import '../passenger/passenger_home.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -66,51 +67,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: AppColors.coral),
-    );
-  }
-
-  void _showForgotPasswordDialog(BuildContext context) {
-    final emailCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Mot de passe oublié'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Entrez votre adresse e-mail, nous vous enverrons un lien de réinitialisation.',
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: emailCtrl,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Adresse e-mail',
-                prefixIcon: Icon(Icons.email_rounded),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                      'Si ce compte existe, un e-mail de réinitialisation a été envoyé.'),
-                ),
-              );
-            },
-            child: const Text('Envoyer'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -210,7 +166,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () => _showForgotPasswordDialog(context),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                  ),
                   child: Text(
                     'Mot de passe oublié ?',
                     style: TextStyle(color: cs.primary, fontWeight: FontWeight.w600),

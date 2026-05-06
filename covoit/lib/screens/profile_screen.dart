@@ -363,7 +363,7 @@ class ProfileScreen extends ConsumerWidget {
                         const Divider(height: 0),
                         _MenuTile(
                             icon: Icons.info_rounded,
-                            label: 'À propos de 237COVOIT',
+                            label: 'À propos d\'AfriGo',
                             onTap: () => _showAboutSheet(context)),
                       ],
                     ),
@@ -555,7 +555,7 @@ class ProfileScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(faq ? 'Aide & FAQ' : 'À propos de 237COVOIT',
+            Text(faq ? 'Aide & FAQ' : 'À propos d\'AfriGo',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             if (faq) ...[
@@ -563,29 +563,29 @@ class ProfileScreen extends ConsumerWidget {
                 title: Text('Comment réserver un trajet ?'),
                 children: [Padding(
                   padding: EdgeInsets.all(12),
-                  child: Text('Recherchez un trajet, choisissez-en un et appuyez sur \"Réserver\".'),
+                  child: Text('Recherchez un trajet, choisissez-en un et appuyez sur "Réserver".'),
                 )],
               ),
               const ExpansionTile(
                 title: Text('Comment annuler une réservation ?'),
                 children: [Padding(
                   padding: EdgeInsets.all(12),
-                  child: Text('Allez dans \"Mes trajets\" et appuyez sur \"Annuler\".'),
+                  child: Text('Allez dans "Mes trajets" et appuyez sur "Annuler".'),
                 )],
               ),
               const ExpansionTile(
                 title: Text('Comment contacter le support ?'),
                 children: [Padding(
                   padding: EdgeInsets.all(12),
-                  child: Text('Via la section Support de votre profil ou par e-mail à support@237covoit.cm'),
+                  child: Text('Via la section Support de votre profil ou par e-mail à support@afrigo.cm'),
                 )],
               ),
             ] else ...[
-              const Text('237COVOIT — Covoiturage au Cameroun'),
+              const Text('AfriGo — Covoiturage au Cameroun'),
               const SizedBox(height: 8),
               const Text('Version 1.0.0'),
               const SizedBox(height: 8),
-              const Text('© 2026 237COVOIT. Tous droits réservés.'),
+              const Text('© 2026 AfriGo. Tous droits réservés.'),
             ],
             const SizedBox(height: 12),
           ],

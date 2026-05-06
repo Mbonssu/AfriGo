@@ -38,19 +38,27 @@ class JourneyRepository {
     int passengerCount = 1,
     String sortBy = 'departure_time',
   }) async {
-    final response = await _client.get<Map<String, dynamic>>(
-      ApiEndpoints.searchTrips,
-      queryParameters: {
-        if (from.isNotEmpty) 'from_city': from,
-        if (to.isNotEmpty) 'to_city': to,
-        if (departureDate != null) 'departure_date': _dateOnly(departureDate),
-        'passenger_count': passengerCount,
-        'sort_by': sortBy,
-      },
-    );
+    try {
+      final response = await _client.get<Map<String, dynamic>>(
+        ApiEndpoints.searchTrips,
+        queryParameters: {
+          if (from.isNotEmpty) 'from_city': from,
+          if (to.isNotEmpty) 'to_city': to,
+          if (departureDate != null) 'departure_date': _dateOnly(departureDate),
+          'passenger_count': passengerCount,
+          'sort_by': sortBy,
+        },
+      );
 
-    final trips = _asMapList(response['trips']);
-    return Future.wait(trips.map(_hydrateTrip));
+      final trips = _asMapList(response['trips']);
+      return Future.wait(trips.map(_hydrateTrip));
+    } on AppException catch (error) {
+      // Si c'est une erreur 404, retourner une liste vide au lieu d'une erreur
+      if (error.statusCode == 404) {
+        return const [];
+      }
+      rethrow;
+    }
   }
 
   Future<List<AppBookingTrip>> getPassengerTrips(String passengerId) async {
@@ -175,6 +183,7 @@ class JourneyRepository {
     String? vehicleId,
     bool isPrime = false,
     List<String> comfortOptions = const [],
+    List<Map<String, dynamic>> waypoints = const [],
   }) async {
     final response = await _client.post<Map<String, dynamic>>(
       '${ApiEndpoints.trips}/',
@@ -190,6 +199,7 @@ class JourneyRepository {
         if (vehicleId != null) 'vehicle_id': vehicleId,
         'is_prime': isPrime,
         if (comfortOptions.isNotEmpty) 'comfort_options': comfortOptions,
+        if (waypoints.isNotEmpty) 'waypoints': waypoints,
       },
     );
     return _hydrateTrip(response);

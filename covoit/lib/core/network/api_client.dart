@@ -51,6 +51,9 @@ class ApiClient {
       ),
     );
 
+    // Log de l'URL utilisée pour debug
+    debugPrint('🌐 API Client initialized with baseUrl: ${ApiEndpoints.gatewayUrl}');
+
     // Ordre important : Auth → Error → Logger (du plus spécifique au plus général)
     dio.interceptors.addAll([
       AuthInterceptor(dio: dio, tokenStorage: tokenStorage, logger: logger),

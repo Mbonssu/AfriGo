@@ -112,6 +112,15 @@ class ErrorInterceptor extends Interceptor {
     if (data is Map<String, dynamic>) {
       // Format FastAPI standard
       if (data['detail'] is String) return data['detail'] as String;
+      
+      // Format imbriqué : {"detail": {"detail": "message"}}
+      if (data['detail'] is Map<String, dynamic>) {
+        final nestedDetail = data['detail'] as Map<String, dynamic>;
+        if (nestedDetail['detail'] is String) {
+          return nestedDetail['detail'] as String;
+        }
+      }
+      
       if (data['message'] is String) return data['message'] as String;
       if (data['error'] is String) return data['error'] as String;
     }

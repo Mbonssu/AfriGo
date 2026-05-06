@@ -43,12 +43,20 @@ class DriverProfileScreen extends ConsumerWidget {
     final displayRatingCount = driverProfile?.ratingCount ?? (userProfile?.totalReviews ?? ratingCount);
     final displayTotalTrips = driverProfile?.totalTrips ?? totalTrips;
 
-    final initials = displayName
-        .split(' ')
-        .where((e) => e.isNotEmpty)
-        .map((e) => e[0])
-        .take(2)
-        .join();
+    // Utiliser la méthode initials du profil utilisateur si disponible
+    String initials = userProfile?.initials ?? '?';
+    if (initials == '?' && displayName.isNotEmpty) {
+      final parts = displayName
+          .split(' ')
+          .where((e) => e.isNotEmpty)
+          .map((e) => e[0])
+          .take(2)
+          .join()
+          .toUpperCase();
+      if (parts.isNotEmpty) {
+        initials = parts;
+      }
+    }
 
     return Scaffold(
       body: CustomScrollView(

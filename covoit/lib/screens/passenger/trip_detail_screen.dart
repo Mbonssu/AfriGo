@@ -6,6 +6,7 @@ import '../../app_theme.dart';
 import '../../core/constants/api_endpoints.dart';
 import '../../data/models/app_trip.dart';
 import '../../data/providers/vehicle_providers.dart';
+import '../../features/trip/widgets/waypoint_display.dart';
 import '../driver/driver_profile_screen.dart';
 import '../payment/payment_screen.dart';
 import 'chat_screen.dart';
@@ -368,6 +369,16 @@ class TripDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  
+                  // Affichage des points de ramassage
+                  if (trip.waypoints.isNotEmpty)
+                    WaypointDisplay(
+                      waypoints: trip.waypoints,
+                      departureCity: trip.from,
+                      arrivalCity: trip.to,
+                      departureTime: trip.departureTime,
+                    ),
+                  
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),

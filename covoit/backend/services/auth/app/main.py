@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Covoit Auth Service",
-    description="Authentication service",
+    description="AfriGo Authentication Service",
     version="1.0.0"
 )
 

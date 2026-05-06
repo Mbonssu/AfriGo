@@ -505,7 +505,7 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
                 }),
             _EmergencyTile(
                 icon: Icons.phone_rounded,
-                label: 'Appeler le support 237COVOIT',
+                label: 'Appeler le support AfriGo',
                 color: AppColors.green,
                 onTap: () {
                   Navigator.pop(ctx);

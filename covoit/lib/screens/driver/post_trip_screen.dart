@@ -6,6 +6,8 @@ import '../../core/network/api_client_provider.dart';
 import '../../data/models/app_vehicle.dart';
 import '../../data/providers/journey_providers.dart';
 import '../../data/providers/vehicle_providers.dart';
+import '../../features/trip/models/waypoint.dart';
+import '../../features/trip/widgets/waypoint_manager.dart';
 import 'vehicles_screen.dart';
 
 class PostTripScreen extends ConsumerStatefulWidget {
@@ -30,6 +32,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 2));
   TimeOfDay _selectedTime = const TimeOfDay(hour: 8, minute: 0);
   bool _isPublishing = false;
+  List<Waypoint> _waypoints = [];
 
   @override
   void dispose() {
@@ -130,6 +133,13 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
         if (_bagsOk) 'bagages',
       ];
 
+      // Convertir les waypoints en format API
+      final waypointsData = _waypoints.map((wp) => {
+        'city_name': wp.cityName,
+        'order_index': wp.orderIndex,
+        'estimated_time': wp.estimatedTime.toIso8601String(),
+      }).toList();
+
       await repository.createTrip(
         driverId: userId,
         departureCity: from,
@@ -141,6 +151,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
         vehiclePlate: _selectedVehicle!.plate,
         vehicleId: _selectedVehicle!.id,
         comfortOptions: comfortOptions,
+        waypoints: waypointsData,
       );
 
       ref.invalidate(driverTripsProvider);
@@ -237,7 +248,9 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
                         firstDate: DateTime.now(),
                         lastDate: DateTime.now().add(const Duration(days: 90)),
                       );
-                      if (d != null) setState(() => _selectedDate = d);
+                      if (d != null && mounted) {
+                        setState(() => _selectedDate = d);
+                      }
                     },
                   ),
                 ),
@@ -251,11 +264,38 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
                         context: context,
                         initialTime: _selectedTime,
                       );
-                      if (t != null) setState(() => _selectedTime = t);
+                      if (t != null && mounted) {
+                        setState(() => _selectedTime = t);
+                      }
                     },
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+
+            // Points de ramassage (Waypoints)
+            const _SectionTitle('Points de ramassage'),
+            const SizedBox(height: 10),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: WaypointManager(
+                  initialWaypoints: _waypoints,
+                  onWaypointsChanged: (waypoints) {
+                    setState(() => _waypoints = waypoints);
+                  },
+                  departureTime: DateTime(
+                    _selectedDate.year,
+                    _selectedDate.month,
+                    _selectedDate.day,
+                    _selectedTime.hour,
+                    _selectedTime.minute,
+                  ),
+                  departureCity: _fromCtrl.text.trim(),
+                  arrivalCity: _toCtrl.text.trim(),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
 

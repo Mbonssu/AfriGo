@@ -56,6 +56,15 @@ class AppUserProfile {
   }
 
   String get initials {
+    // Si firstName et lastName sont vides, utiliser l'email ou le téléphone
+    if (firstName.isEmpty && lastName.isEmpty) {
+      // Essayer d'utiliser la première lettre du téléphone ou '?'
+      if (phone.isNotEmpty) {
+        return phone[0].toUpperCase();
+      }
+      return '?';
+    }
+    
     final parts = fullName.split(' ').where((p) => p.isNotEmpty).toList();
     if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts[0][0].toUpperCase();

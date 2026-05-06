@@ -1,4 +1,4 @@
-/// Contrat d'URL vers le backend 237COVOIT (architecture microservices).
+/// Contrat d'URL vers le backend AfriGo (architecture microservices).
 ///
 /// ┌─────────────────────────────────────────────────────────────────────┐
 /// │  Flutter → API Gateway (localhost:8000)                             │
@@ -16,12 +16,12 @@
 ///
 /// Environnements :
 ///   dev  → `flutter run`                                  → localhost:8000
-///   prod → `flutter build apk --dart-define=PROD=true`   → api.237covoit.cm
+///   prod → `flutter build apk --dart-define=PROD=true`   → api.afrigo.cm
 class ApiEndpoints {
   ApiEndpoints._();
 
   static const String _prodGatewayUrl = 'https://api.AfriGo.cm';
-  static const String _devGatewayUrl = 'http://localhost:8000';
+  static const String _devGatewayUrl = 'http://192.168.45.54:8000';
 
   // ── Gateway base URL ──────────────────────────────────────────────────────
   static const String gatewayUrl = String.fromEnvironment(
@@ -49,11 +49,15 @@ class ApiEndpoints {
   // POST   $_auth/logout         → révocation token (blacklist Redis)
   // POST   $_auth/refresh        → obtenir un nouvel access token
   // GET    $_auth/me             → profil de l'utilisateur connecté
-  static const String login        = '$_auth/login';
-  static const String register     = '$_auth/register';
-  static const String logout       = '$_auth/logout';
-  static const String refreshToken = '$_auth/refresh';
-  static const String me           = '$_auth/me';
+  // POST   $_auth/forgot-password → demande de réinitialisation de mot de passe
+  // POST   $_auth/reset-password  → réinitialisation du mot de passe avec token
+  static const String login           = '$_auth/login';
+  static const String register        = '$_auth/register';
+  static const String logout          = '$_auth/logout';
+  static const String refreshToken    = '$_auth/refresh';
+  static const String me              = '$_auth/me';
+  static const String forgotPassword  = '$_auth/forgot-password';
+  static const String resetPassword   = '$_auth/reset-password';
 
   // ═══════════════════════════════════════════════════════════════════════════
   // USER SERVICE  (gateway → user-service:8002)
@@ -210,7 +214,7 @@ class ApiEndpoints {
   // ═══════════════════════════════════════════════════════════════════════════
   // WEBSOCKET — Temps réel (chat, tracking, notifications)
   // ═══════════════════════════════════════════════════════════════════════════
-  static const String _wsDevUrl  = 'ws://localhost:8000';
+  static const String _wsDevUrl  = 'ws://192.168.45.54:8000';
   static const String _wsProdUrl = 'wss://api.AfriGo.cm';
   static const String wsBaseUrl = String.fromEnvironment(
     'WS_BASE_URL',
@@ -230,6 +234,8 @@ class ApiEndpoints {
     login,
     register,
     refreshToken,
+    forgotPassword,
+    resetPassword,
     trips,
     searchTrips,
     healthCheck,

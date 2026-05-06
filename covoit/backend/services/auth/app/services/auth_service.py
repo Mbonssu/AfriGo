@@ -4,6 +4,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 import bcrypt
+import secrets
 from jose import JWTError, jwt
 from app.core.config import settings
 from app.models.user import User, UserRole
@@ -53,16 +54,17 @@ class AuthService:
     def register(db: Session, request: RegisterRequest) -> Tuple[User, str, str]:
         logger.info(f"Starting registration for email: {request.email}, role: {request.role}")
         
-        # Check if user exists
-        existing_user = db.query(User).filter(
-            or_(User.email == request.email, User.phone == request.phone)
-        ).first()
-        if existing_user:
-            if existing_user.email == request.email:
-                logger.error(f"User already exists with email: {request.email}")
-                raise ValueError("User already exists")
+        # Check if email exists
+        existing_email = db.query(User).filter(User.email == request.email).first()
+        if existing_email:
+            logger.error(f"User already exists with email: {request.email}")
+            raise ValueError("Cet email est déjà utilisé. Veuillez vous connecter ou utiliser un autre email.")
+        
+        # Check if phone exists
+        existing_phone = db.query(User).filter(User.phone == request.phone).first()
+        if existing_phone:
             logger.error(f"Phone already exists: {request.phone}")
-            raise ValueError("Phone already exists")
+            raise ValueError("Ce numéro de téléphone est déjà utilisé. Veuillez utiliser un autre numéro.")
         
         # Create user
         try:
@@ -107,10 +109,10 @@ class AuthService:
         # Find user
         user = db.query(User).filter(User.email == request.email).first()
         if not user or not AuthService.verify_password(request.password, user.password_hash):
-            raise ValueError("Invalid credentials")
+            raise ValueError("Email ou mot de passe incorrect.")
         
         if not user.is_active:
-            raise ValueError("User is inactive")
+            raise ValueError("Votre compte a été désactivé. Contactez le support.")
         
         # Generate tokens
         access_token = AuthService.create_access_token(str(user.id))
@@ -118,3 +120,57 @@ class AuthService:
         
         logger.info(f"User logged in: {user.email}")
         return user, access_token, refresh_token
+    
+    @staticmethod
+    def generate_reset_token() -> str:
+        """Génère un token de réinitialisation sécurisé"""
+        return secrets.token_urlsafe(32)
+    
+    @staticmethod
+    def request_password_reset(db: Session, email: str) -> Optional[str]:
+        """
+        Crée un token de réinitialisation pour l'utilisateur.
+        Retourne le token si l'utilisateur existe, None sinon.
+        """
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            logger.warning(f"Password reset requested for non-existent email: {email}")
+            return None
+        
+        # Générer un token de réinitialisation
+        reset_token = AuthService.generate_reset_token()
+        user.reset_token = reset_token
+        user.reset_token_expires = datetime.utcnow() + timedelta(hours=1)  # Expire dans 1 heure
+        
+        db.commit()
+        db.refresh(user)
+        
+        logger.info(f"Password reset token generated for user: {user.email}")
+        return reset_token
+    
+    @staticmethod
+    def reset_password(db: Session, token: str, new_password: str) -> bool:
+        """
+        Réinitialise le mot de passe avec le token fourni.
+        Retourne True si succès, False sinon.
+        """
+        user = db.query(User).filter(User.reset_token == token).first()
+        
+        if not user:
+            logger.warning(f"Invalid reset token: {token}")
+            raise ValueError("Token de réinitialisation invalide.")
+        
+        if not user.reset_token_expires or user.reset_token_expires < datetime.utcnow():
+            logger.warning(f"Expired reset token for user: {user.email}")
+            raise ValueError("Le token de réinitialisation a expiré. Veuillez faire une nouvelle demande.")
+        
+        # Réinitialiser le mot de passe
+        user.password_hash = AuthService.hash_password(new_password)
+        user.reset_token = None
+        user.reset_token_expires = None
+        
+        db.commit()
+        db.refresh(user)
+        
+        logger.info(f"Password reset successful for user: {user.email}")
+        return True
