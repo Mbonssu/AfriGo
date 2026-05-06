@@ -74,27 +74,34 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
         );
         return;
     }
-    if (_selectedTime.hour < 5 || _selectedTime.hour >= 22) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('L\'heure de départ doit être entre 05:00 et 22:00.'),
-            backgroundColor: AppColors.coral,
-          ),
-        );
-        return;
-    }
-    final departurePrecheck = DateTime(
+    
+    // Validation de la date/heure combinée
+    final departureDateTime = DateTime(
       _selectedDate.year,
       _selectedDate.month,
       _selectedDate.day,
       _selectedTime.hour,
       _selectedTime.minute,
     );
-    if (departurePrecheck
-        .isBefore(DateTime.now().add(const Duration(minutes: 30)))) {
+    
+    // Vérifier que le départ est au moins 30 minutes dans le futur
+    final minimumDeparture = DateTime.now().add(const Duration(minutes: 30));
+    if (departureDateTime.isBefore(minimumDeparture)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Le départ doit être prévu au moins 30 minutes à l\'avance.'),
+            backgroundColor: AppColors.coral,
+          ),
+        );
+        return;
+    }
+    
+    // Vérifier que le départ n'est pas trop loin dans le futur (90 jours max)
+    final maximumDeparture = DateTime.now().add(const Duration(days: 90));
+    if (departureDateTime.isAfter(maximumDeparture)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Le départ ne peut pas être prévu à plus de 90 jours.'),
             backgroundColor: AppColors.coral,
           ),
         );

@@ -105,8 +105,13 @@ class TripService:
                     )
                     # Ajouter à la session
                     db.add(waypoint)
-                    # Ajouter à la liste pour retour
-                    waypoints.append(WaypointResponse.from_orm(waypoint))
+                    waypoints.append(waypoint)
+                
+                # Flush pour générer les IDs et created_at des waypoints
+                db.flush()
+                
+                # Maintenant convertir en WaypointResponse avec tous les champs remplis
+                waypoints = [WaypointResponse.from_orm(wp) for wp in waypoints]
             
             # Créer les options de confort (climatisation, WiFi, etc) si fournis
             comfort_options = None
