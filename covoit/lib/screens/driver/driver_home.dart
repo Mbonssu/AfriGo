@@ -172,7 +172,7 @@ class _DriverHomeTabBody extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Bonjour, $firstName 👋',
+                                  Text('Salut 👋',
                                       style: const TextStyle(
                                           color: Colors.white70,
                                           fontSize: 13)),
@@ -365,7 +365,6 @@ class _DriverHomeTabBody extends ConsumerWidget {
                       Expanded(
                         child: _QuickAction(
                           icon: Icons.add_road_rounded,
-                          label: 'Nouveau trajet',
                           color: isPrime ? AppColors.prime : AppColors.green,
                           onTap: () => onNavigate(1),
                         ),
@@ -374,7 +373,6 @@ class _DriverHomeTabBody extends ConsumerWidget {
                       Expanded(
                         child: _QuickAction(
                           icon: Icons.directions_car_rounded,
-                          label: 'Mes véhicules',
                           color: isPrime ? AppColors.primeDark : AppColors.greenDark,
                           onTap: () => Navigator.push(
                             context,
@@ -386,7 +384,6 @@ class _DriverHomeTabBody extends ConsumerWidget {
                       Expanded(
                         child: _QuickAction(
                           icon: Icons.bar_chart_rounded,
-                          label: 'Mes stats',
                           color: isPrime ? AppColors.primeDark : AppColors.prime,
                           onTap: () => onNavigate(3),
                         ),
@@ -492,13 +489,13 @@ class _StatPill extends StatelessWidget {
 
 class _QuickAction extends StatelessWidget {
   final IconData icon;
-  final String label;
+  final String? label;
   final Color color;
   final VoidCallback onTap;
 
   const _QuickAction({
     required this.icon,
-    required this.label,
+    this.label,
     required this.color,
     required this.onTap,
   });
@@ -517,27 +514,39 @@ class _QuickAction extends StatelessWidget {
           border: Border.all(
               color: cs.outline.withValues(alpha: 0.5), width: 0.5),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+        child: label != null
+            ? Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(icon, color: color, size: 20),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(label!,
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: cs.onSurface)),
+                  ),
+                ],
+              )
+            : Center(
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: color, size: 24),
+                ),
               ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(label,
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurface)),
-            ),
-          ],
-        ),
       ),
     );
   }
