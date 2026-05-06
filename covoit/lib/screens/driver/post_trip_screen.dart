@@ -161,7 +161,9 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
         waypoints: waypointsData,
       );
 
+      // Invalider les deux providers pour rafraîchir l'écran d'accueil ET l'écran des trajets
       ref.invalidate(driverTripsProvider);
+      ref.invalidate(driverTripsByIdProvider(userId));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
