@@ -33,6 +33,12 @@ class Settings(BaseSettings):
     # Version de l'API
     SERVICE_VERSION: str = "1.0.0"
     
+    # URL du Trip Service pour réserver/libérer des places
+    TRIP_SERVICE_URL: str = Field(
+        default="http://trip-service:8003",
+        description="URL du Trip Service pour la gestion des places"
+    )
+    
     # Configuration pour Pydantic : lire les variables depuis les fichiers .env
     class Config:
         # Chercher un fichier .env à la racine du projet

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from uuid import UUID
 from typing import Optional, List, Tuple
+import httpx
 
 # Import des modèles SQLAlchemy
 from app.models.booking import Booking, BookingNote, BookingStatus
@@ -20,6 +21,9 @@ from app.schemas.booking import (
     BoardingResponse,
 )
 
+# Import de la configuration
+from app.core.config import settings
+
 class BookingService:
     """
     Service métier pour gérer toutes les réservations.
@@ -29,7 +33,7 @@ class BookingService:
     @staticmethod
     def create_booking(db: Session, request: BookingCreateRequest) -> BookingResponse:
         """
-        Crée une nouvelle réservation en base de données.
+        Crée une nouvelle réservation en base de données ET réserve les places dans le trajet.
         
         Paramètres:
             db: Session SQLAlchemy pour les requêtes
@@ -48,7 +52,23 @@ class BookingService:
             >>> booking = BookingService.create_booking(db, booking_req)
         """
         
-        # Créer l'objet Booking SQLAlchemy
+        # 1. Appeler le Trip Service pour réserver les places
+        try:
+            with httpx.Client(timeout=10.0) as client:
+                response = client.post(
+                    f"{settings.TRIP_SERVICE_URL}/trips/{request.trip_id}/book",
+                    params={"passenger_count": request.number_of_seats}
+                )
+                
+                if response.status_code != 200:
+                    raise ValueError("Pas assez de places disponibles pour ce trajet")
+                    
+        except httpx.RequestError as e:
+            raise ValueError(f"Impossible de contacter le service de trajets: {str(e)}")
+        except httpx.TimeoutException:
+            raise ValueError("Le service de trajets ne répond pas")
+        
+        # 2. Si réservation réussie, créer la réservation en base de données
         db_booking = Booking(
             trip_id=request.trip_id,                          # UUID du trajet
             passenger_id=request.passenger_id,                # UUID du passager
@@ -341,7 +361,7 @@ class BookingService:
     @staticmethod
     def cancel_booking(db: Session, booking_id: UUID) -> BookingResponse:
         """
-        Annule une réservation.
+        Annule une réservation ET libère les places dans le trajet.
         """
         
         db_booking = db.query(Booking).filter(Booking.id == booking_id).first()
@@ -351,6 +371,17 @@ class BookingService:
         
         if db_booking.status == BookingStatus.COMPLETED:
             raise ValueError("Impossible d'annuler un trajet déjà complété")
+        
+        # Libérer les places dans le Trip Service
+        try:
+            with httpx.Client(timeout=10.0) as client:
+                response = client.post(
+                    f"{settings.TRIP_SERVICE_URL}/trips/{db_booking.trip_id}/release",
+                    params={"passenger_count": db_booking.number_of_seats}
+                )
+                # On continue même si ça échoue (les places seront libérées manuellement si besoin)
+        except Exception as e:
+            print(f"⚠️ Erreur lors de la libération des places: {e}")
         
         db_booking.status = BookingStatus.CANCELLED
         db_booking.updated_at = datetime.utcnow()
@@ -388,7 +419,7 @@ class BookingService:
     @staticmethod
     def reject_booking(db: Session, booking_id: UUID, reason: str = None) -> BookingResponse:
         """
-        Le conducteur refuse une réservation en attente.
+        Le conducteur refuse une réservation en attente ET libère les places.
         Transition : pending → rejected
         """
         db_booking = db.query(Booking).filter(Booking.id == booking_id).first()
@@ -401,6 +432,16 @@ class BookingService:
                 f"Seules les réservations en attente peuvent être refusées. "
                 f"Statut actuel: {db_booking.status.value}"
             )
+
+        # Libérer les places dans le Trip Service
+        try:
+            with httpx.Client(timeout=10.0) as client:
+                response = client.post(
+                    f"{settings.TRIP_SERVICE_URL}/trips/{db_booking.trip_id}/release",
+                    params={"passenger_count": db_booking.number_of_seats}
+                )
+        except Exception as e:
+            print(f"⚠️ Erreur lors de la libération des places: {e}")
 
         db_booking.status = BookingStatus.REJECTED
         if reason:
