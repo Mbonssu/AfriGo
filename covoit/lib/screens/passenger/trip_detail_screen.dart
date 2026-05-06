@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../app_theme.dart';
 import '../../core/constants/api_endpoints.dart';
+import '../../widgets/user_avatar.dart';
 import '../../data/models/app_trip.dart';
 import '../../data/providers/vehicle_providers.dart';
 import '../../features/trip/widgets/waypoint_display.dart';
@@ -31,12 +32,6 @@ class TripDetailScreen extends ConsumerWidget {
     final arrivalTime = DateFormat('HH:mm')
         .format(trip.departureTime.add(Duration(minutes: durationMinutes)));
     final durationLabel = _formatDuration(durationMinutes);
-    final initials = driver.fullName
-        .split(' ')
-        .where((part) => part.isNotEmpty)
-        .map((part) => part[0])
-        .take(2)
-        .join();
     final comfortOptions = trip.comfortOptions.isEmpty
         ? const ['Trajet standard']
         : trip.comfortOptions;
@@ -144,21 +139,11 @@ class TripDetailScreen extends ConsumerWidget {
                             ),
                             child: Row(
                               children: [
-                                CircleAvatar(
+                                PrimeUserAvatar(
+                                  photoUrl: driver.profilePictureUrl,
+                                  initials: driver.initials,
                                   radius: 28,
-                                  backgroundColor: driver.isPrime
-                                      ? AppColors.primeBg
-                                      : AppColors.greenLight,
-                                  child: Text(
-                                    initials,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      color: driver.isPrime
-                                          ? AppColors.primeDark
-                                          : AppColors.greenDark,
-                                    ),
-                                  ),
+                                  isPrime: driver.isPrime,
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(

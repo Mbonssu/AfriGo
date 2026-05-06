@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../app_theme.dart';
 import '../main.dart';
+import '../core/constants/api_endpoints.dart';
+import '../widgets/user_avatar.dart';
 import '../data/providers/user_providers.dart';
 import '../data/providers/journey_providers.dart';
 import '../data/providers/auth_providers.dart';
@@ -11,6 +13,7 @@ import 'driver/subscription_screen.dart';
 import 'driver/driver_stats_screen.dart';
 import 'emergency_contact_screen.dart';
 import 'identity_verification_screen.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   final bool isPassenger;
@@ -48,26 +51,30 @@ class ProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
               child: Column(
                 children: [
-                  Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      CircleAvatar(
-                        radius: 44,
-                        backgroundColor: Colors.white24,
-                        child: Text(initials,
-                            style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white)),
-                      ),
-                      Container(
-                        width: 28, height: 28,
-                        decoration: const BoxDecoration(
-                            color: Colors.white, shape: BoxShape.circle),
-                        child: const Icon(Icons.camera_alt_rounded,
-                            size: 14, color: AppColors.green),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        UserAvatar(
+                          photoUrl: profile?.profilePictureUrl,
+                          initials: initials,
+                          radius: 44,
+                          backgroundColor: Colors.white24,
+                          textColor: Colors.white,
+                        ),
+                        Container(
+                          width: 28, height: 28,
+                          decoration: const BoxDecoration(
+                              color: Colors.white, shape: BoxShape.circle),
+                          child: const Icon(Icons.camera_alt_rounded,
+                              size: 14, color: AppColors.green),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(displayName,
@@ -205,9 +212,12 @@ class ProfileScreen extends ConsumerWidget {
                     child: Column(
                       children: [
                         _MenuTile(
-                            icon: Icons.person_rounded,
-                            label: 'Informations personnelles',
-                            onTap: () => _showInfoDialog(context, profile)),
+                            icon: Icons.edit_rounded,
+                            label: 'Modifier mon profil',
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const EditProfileScreen()))),
                         const Divider(height: 0),
                         _MenuTile(
                             icon: Icons.verified_user_rounded,
@@ -392,32 +402,6 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showInfoDialog(BuildContext context, dynamic profile) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Informations personnelles'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Nom : ${profile?.lastName ?? '—'}'),
-            const SizedBox(height: 8),
-            Text('Prénom : ${profile?.firstName ?? '—'}'),
-            const SizedBox(height: 8),
-            Text('Téléphone : ${profile?.phone ?? '—'}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Fermer'),
-          ),
-        ],
       ),
     );
   }

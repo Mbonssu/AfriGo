@@ -11,7 +11,9 @@ logger = logging.getLogger(__name__)
 
 UPLOAD_ROOT = os.getenv("UPLOAD_ROOT", "/app/uploads")
 
-# Create upload directory before mounting StaticFiles
+# Create upload directories before mounting StaticFiles
+os.makedirs(os.path.join(UPLOAD_ROOT, "profiles"), exist_ok=True)
+os.makedirs(os.path.join(UPLOAD_ROOT, "kyc"), exist_ok=True)
 os.makedirs(os.path.join(UPLOAD_ROOT, "vehicles"), exist_ok=True)
 
 app = FastAPI(

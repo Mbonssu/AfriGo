@@ -106,7 +106,7 @@ class _IdentityVerificationScreenState
       });
 
       final response = await client.uploadFile<Map<String, dynamic>>(
-        ApiEndpoints.kycVerify(userId),
+        ApiEndpoints.verifyKYC(userId),
         formData: formData,
       );
 

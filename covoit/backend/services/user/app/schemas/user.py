@@ -15,6 +15,7 @@ class UserProfileBase(BaseModel):
 
 class UserProfileUpdate(UserProfileBase):
     phone: Optional[str] = None
+    profile_picture_url: Optional[str] = None
     emergency_contact_name: Optional[str] = None
     emergency_contact_phone: Optional[str] = None
 
@@ -54,6 +55,10 @@ class UserProfileResponse(UserProfileBase):
     kyc_status: Optional[str] = "none"
     cni_type: Optional[str] = None
     cni_number: Optional[str] = None
+    cni_photo_url: Optional[str] = None
+    selfie_url: Optional[str] = None
+    license_photo_url: Optional[str] = None
+    registration_card_url: Optional[str] = None
     face_match_score: Optional[float] = None
     created_at: datetime
     updated_at: datetime

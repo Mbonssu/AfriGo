@@ -6,6 +6,7 @@ class AppDriverProfile {
   final int ratingCount;
   final int totalTrips;
   final String? phone;
+  final String? profilePictureUrl;
 
   const AppDriverProfile({
     required this.userId,
@@ -15,6 +16,7 @@ class AppDriverProfile {
     required this.ratingCount,
     required this.totalTrips,
     this.phone,
+    this.profilePictureUrl,
   });
 
   factory AppDriverProfile.fromApi({
@@ -34,6 +36,7 @@ class AppDriverProfile {
       ratingCount: _asInt(userData?['total_reviews']),
       totalTrips: _asInt(driverData?['total_trips']),
       phone: userData?['phone']?.toString(),
+      profilePictureUrl: userData?['profile_picture_url']?.toString(),
     );
   }
 
@@ -45,6 +48,7 @@ class AppDriverProfile {
       rating: 0,
       ratingCount: 0,
       totalTrips: 0,
+      profilePictureUrl: null,
     );
   }
 
@@ -68,5 +72,12 @@ class AppDriverProfile {
   static String _shortId(String value) {
     if (value.length <= 6) return value;
     return value.substring(value.length - 6);
+  }
+
+  String get initials {
+    final parts = fullName.split(' ').where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
 }

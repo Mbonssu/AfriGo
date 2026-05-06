@@ -64,9 +64,12 @@ class ApiEndpoints {
   // ═══════════════════════════════════════════════════════════════════════════
   // Gateway actuel :
   // GET/PATCH $_users/profile/{id}        → profil public / mise à jour
+  // PUT       $_users/profile/{id}        → mise à jour avec photo
+  // POST      $_users/profile/{id}/photo  → upload photo de profil
   // GET       $_users/profile/{id}/driver → fiche chauffeur publique
   static String userProfile(String id) => '$_users/profile/$id';
   static String updateProfile(String id) => '$_users/profile/$id';
+  static String uploadProfilePhoto(String id) => '$_users/profile/$id/photo';
   static String userById(String id) => '$_users/profile/$id';
   static String driverPublicProfile(String id) => '$_users/profile/$id/driver';
 
@@ -87,7 +90,11 @@ class ApiEndpoints {
 
   // ── KYC — Vérification d'identité ────────────────────────────────────────
   static String kycStatus(String userId) => '$_users/profile/$userId/kyc';
-  static String kycVerify(String userId) => '$_users/profile/$userId/kyc/verify';
+  static String verifyKYC(String userId) => '$_users/profile/$userId/kyc/verify';
+
+  // ── Uploads — Servir les fichiers uploadés ───────────────────────────────
+  static String profilePhotoFile(String filename) => '$_users/uploads/profiles/$filename';
+  static String kycPhotoFile(String filename) => '$_users/uploads/kyc/$filename';
 
   // ═══════════════════════════════════════════════════════════════════════════
   // TRIP SERVICE  (gateway → trip-service:8003)

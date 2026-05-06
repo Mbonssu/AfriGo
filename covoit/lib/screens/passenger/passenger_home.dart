@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../app_theme.dart';
+import '../../widgets/user_avatar.dart';
 import '../../data/providers/journey_providers.dart';
 import '../../data/providers/user_providers.dart';
 import 'search_screen.dart';
@@ -192,17 +193,12 @@ class _HomeTab extends ConsumerWidget {
               // Avatar fixe à droite
               Padding(
                 padding: const EdgeInsets.only(right: 16),
-                child: CircleAvatar(
+                child: UserAvatar(
+                  photoUrl: profile?.profilePictureUrl,
+                  initials: initials,
                   radius: 18,
                   backgroundColor: Colors.white.withValues(alpha: 0.25),
-                  child: Text(
-                    initials,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
+                  textColor: Colors.white,
                 ),
               ),
             ],

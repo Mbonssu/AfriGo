@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from uuid import UUID
+from typing import Optional
 from app.schemas.user import UserProfileResponse, DriverProfileResponse, UserProfileUpdate, DriverProfileUpdate
 from app.services.user_service import UserService, DriverService
+from app.services.file_service import file_service
 from app.db.session import get_db
 import os
 import uuid as uuid_mod
@@ -38,6 +40,118 @@ async def update_user_profile(user_id: str, data: UserProfileUpdate, db: Session
         raise HTTPException(status_code=400, detail="Invalid user ID")
     except Exception as e:
         logger.error(f"Error updating user profile: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.post("/{user_id}/profile-photo")
+async def upload_profile_photo(
+    user_id: str,
+    photo: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    """Upload or update profile photo"""
+    try:
+        # Validate file type
+        if photo.content_type not in ("image/jpeg", "image/png", "image/webp"):
+            raise HTTPException(status_code=400, detail="Format invalide. Utilisez JPEG, PNG ou WebP")
+        
+        # Validate file size (max 5MB)
+        content = await photo.read()
+        if len(content) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Photo trop volumineuse (max 5 Mo)")
+        
+        # Reset file pointer
+        await photo.seek(0)
+        
+        # Get user profile
+        profile = UserService.get_profile(db, UUID(user_id))
+        if not profile:
+            raise HTTPException(status_code=404, detail="User profile not found")
+        
+        # Delete old photo if exists
+        if profile.profile_picture_url:
+            file_service.delete_file(profile.profile_picture_url)
+        
+        # Save new photo
+        photo_url = await file_service.save_profile_photo(user_id, photo)
+        
+        # Update profile
+        update_data = UserProfileUpdate(profile_picture_url=photo_url)
+        profile = UserService.update_profile(db, UUID(user_id), update_data)
+        
+        return {
+            "message": "Photo de profil mise à jour avec succès",
+            "photo_url": photo_url
+        }
+        
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid user ID")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading profile photo: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.put("/{user_id}/profile")
+async def update_profile_with_photo(
+    user_id: str,
+    first_name: Optional[str] = Form(None),
+    last_name: Optional[str] = Form(None),
+    phone: Optional[str] = Form(None),
+    photo: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db),
+):
+    """Update profile information with optional photo upload"""
+    try:
+        # Get user profile
+        profile = UserService.get_profile(db, UUID(user_id))
+        if not profile:
+            raise HTTPException(status_code=404, detail="User profile not found")
+        
+        # Handle photo upload if provided
+        photo_url = None
+        if photo:
+            # Validate file type
+            if photo.content_type not in ("image/jpeg", "image/png", "image/webp"):
+                raise HTTPException(status_code=400, detail="Format invalide. Utilisez JPEG, PNG ou WebP")
+            
+            # Validate file size (max 5MB)
+            content = await photo.read()
+            if len(content) > 5 * 1024 * 1024:
+                raise HTTPException(status_code=400, detail="Photo trop volumineuse (max 5 Mo)")
+            
+            # Reset file pointer
+            await photo.seek(0)
+            
+            # Delete old photo if exists
+            if profile.profile_picture_url:
+                file_service.delete_file(profile.profile_picture_url)
+            
+            # Save new photo
+            photo_url = await file_service.save_profile_photo(user_id, photo)
+        
+        # Update profile data
+        update_data = UserProfileUpdate(
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            profile_picture_url=photo_url if photo_url else None
+        )
+        
+        profile = UserService.update_profile(db, UUID(user_id), update_data)
+        
+        return {
+            "message": "Profil mis à jour avec succès",
+            "profile": UserProfileResponse.model_validate(profile)
+        }
+        
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid user ID")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating profile: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.post("/{user_id}/driver", response_model=DriverProfileResponse)
@@ -159,47 +273,64 @@ async def verify_identity(
     user_id: str,
     cni_photo: UploadFile = File(...),
     selfie: UploadFile = File(...),
+    license_photo: Optional[UploadFile] = File(None),
+    registration_card: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
 ):
     """
-    Reçoit la CNI et le selfie, les stocke, et passe le statut KYC à 'pending'
-    en attente d'une vérification manuelle.
+    Reçoit la CNI, le selfie, et optionnellement le permis et la carte grise,
+    les stocke, et passe le statut KYC à 'pending' en attente d'une vérification manuelle.
     """
     try:
         profile = UserService.get_profile(db, UUID(user_id))
         if not profile:
             raise HTTPException(status_code=404, detail="User profile not found")
 
-        for f in [cni_photo, selfie]:
+        # Validate all provided files
+        files_to_validate = [cni_photo, selfie]
+        if license_photo:
+            files_to_validate.append(license_photo)
+        if registration_card:
+            files_to_validate.append(registration_card)
+        
+        for f in files_to_validate:
             if f.content_type not in ("image/jpeg", "image/png", "image/webp"):
                 raise HTTPException(status_code=400, detail=f"Format invalide pour {f.filename}")
+            
+            content = await f.read()
+            if len(content) > 10 * 1024 * 1024:
+                raise HTTPException(status_code=400, detail=f"{f.filename} trop volumineux (max 10 Mo)")
+            await f.seek(0)  # Reset file pointer
 
-        cni_bytes = await cni_photo.read()
-        selfie_bytes = await selfie.read()
-
-        for data, name in [(cni_bytes, "cni_photo"), (selfie_bytes, "selfie")]:
-            if len(data) > 10 * 1024 * 1024:
-                raise HTTPException(status_code=400, detail=f"{name} trop volumineux (max 10 Mo)")
-
-        os.makedirs(KYC_UPLOAD_DIR, exist_ok=True)
-        cni_filename = f"{uuid_mod.uuid4()}_cni.jpg"
-        selfie_filename = f"{uuid_mod.uuid4()}_selfie.jpg"
-
-        with open(os.path.join(KYC_UPLOAD_DIR, cni_filename), "wb") as f:
-            f.write(cni_bytes)
-        with open(os.path.join(KYC_UPLOAD_DIR, selfie_filename), "wb") as f:
-            f.write(selfie_bytes)
+        # Save CNI photo
+        cni_url = await file_service.save_cni_photo(user_id, cni_photo)
+        profile.cni_photo_url = cni_url
+        
+        # Save selfie
+        selfie_url = await file_service.save_selfie(user_id, selfie)
+        profile.selfie_url = selfie_url
+        
+        # Save license photo if provided
+        if license_photo:
+            license_url = await file_service.save_license_photo(user_id, license_photo)
+            profile.license_photo_url = license_url
+        
+        # Save registration card if provided
+        if registration_card:
+            registration_url = await file_service.save_registration_card(user_id, registration_card)
+            profile.registration_card_url = registration_url
 
         profile.kyc_status = "pending"
-        profile.cni_photo_url = f"/uploads/kyc/{cni_filename}"
-        profile.selfie_url = f"/uploads/kyc/{selfie_filename}"
-
         db.commit()
         db.refresh(profile)
 
         return {
             "kyc_status": "pending",
             "message": "Documents reçus. Votre identité sera vérifiée manuellement sous 24-48h.",
+            "cni_photo_url": cni_url,
+            "selfie_url": selfie_url,
+            "license_photo_url": profile.license_photo_url,
+            "registration_card_url": profile.registration_card_url,
         }
 
     except ValueError:

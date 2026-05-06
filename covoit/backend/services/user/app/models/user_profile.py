@@ -32,6 +32,8 @@ class UserProfile(Base):
     cni_photo_url = Column(String, nullable=True)
     selfie_url = Column(String, nullable=True)
     face_match_score = Column(Float, nullable=True)
+    license_photo_url = Column(String, nullable=True)  # Driver license photo
+    registration_card_url = Column(String, nullable=True)  # Vehicle registration card (carte grise)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

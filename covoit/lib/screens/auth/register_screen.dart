@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../app_theme.dart';
 import '../../core/errors/exceptions.dart';
+import '../../core/services/media_service.dart';
 import '../../data/providers/auth_providers.dart';
+import '../../data/providers/user_providers.dart';
 import '../driver/driver_home.dart';
 import '../passenger/passenger_home.dart';
 import 'login_screen.dart';
@@ -57,6 +61,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _nextStep();
   }
 
+  File? _cniPhoto;
+  File? _profilePhoto;
+  File? _licensePhoto;
+  File? _registrationCard;
+
   Future<void> _submitRegistration() async {
     setState(() => _loading = true);
 
@@ -82,6 +91,38 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           phone: _phoneCtrl.text.trim(),
         );
         logger.info('✅ Profil utilisateur mis à jour avec succès');
+        
+        // Upload des photos si disponibles
+        final userRepo = ref.read(userRepositoryProvider);
+        
+        // Upload photo de profil
+        if (_profilePhoto != null) {
+          try {
+            await userRepo.uploadProfilePhoto(
+              userId: session.userId,
+              photo: _profilePhoto!,
+            );
+            logger.info('✅ Photo de profil uploadée');
+          } catch (e) {
+            logger.warning('⚠️ Échec upload photo de profil : $e');
+          }
+        }
+        
+        // Upload documents KYC si disponibles
+        if (_cniPhoto != null && _profilePhoto != null) {
+          try {
+            await userRepo.uploadKYCDocuments(
+              userId: session.userId,
+              cniPhoto: _cniPhoto!,
+              selfie: _profilePhoto!, // On utilise la photo de profil comme selfie
+              licensePhoto: _licensePhoto,
+              registrationCard: _registrationCard,
+            );
+            logger.info('✅ Documents KYC uploadés');
+          } catch (e) {
+            logger.warning('⚠️ Échec upload KYC : $e');
+          }
+        }
       } catch (e) {
         // L'inscription doit rester réussie même si le profil enrichi échoue.
         logger.warning('⚠️ Échec de la mise à jour du profil : $e');
@@ -179,6 +220,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             phone: _phoneCtrl.text.trim(),
             loading: _loading,
             onFinish: _submitRegistration,
+            onCniPhotoSelected: (file) => setState(() => _cniPhoto = file),
+            onProfilePhotoSelected: (file) => setState(() => _profilePhoto = file),
+            onLicensePhotoSelected: (file) => setState(() => _licensePhoto = file),
+            onRegistrationCardSelected: (file) => setState(() => _registrationCard = file),
           ),
         ],
       ),
@@ -497,7 +542,7 @@ class _Step2State extends State<_Step2> {
   }
 }
 
-class _Step3 extends StatelessWidget {
+class _Step3 extends StatefulWidget {
   final String role;
   final bool isPrime;
   final String fullName;
@@ -505,6 +550,10 @@ class _Step3 extends StatelessWidget {
   final String phone;
   final bool loading;
   final Future<void> Function() onFinish;
+  final Function(File) onCniPhotoSelected;
+  final Function(File) onProfilePhotoSelected;
+  final Function(File)? onLicensePhotoSelected;
+  final Function(File)? onRegistrationCardSelected;
 
   const _Step3({
     required this.role,
@@ -514,12 +563,26 @@ class _Step3 extends StatelessWidget {
     required this.phone,
     required this.loading,
     required this.onFinish,
+    required this.onCniPhotoSelected,
+    required this.onProfilePhotoSelected,
+    this.onLicensePhotoSelected,
+    this.onRegistrationCardSelected,
   });
+
+  @override
+  State<_Step3> createState() => _Step3State();
+}
+
+class _Step3State extends State<_Step3> {
+  File? _cniPhoto;
+  File? _profilePhoto;
+  File? _licensePhoto;
+  File? _registrationCard;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final isDriver = role == 'chauffeur';
+    final isDriver = widget.role == 'chauffeur';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -557,40 +620,56 @@ class _Step3 extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   _SummaryRow(label: 'Profil', value: isDriver ? 'Chauffeur' : 'Passager'),
-                  _SummaryRow(label: 'Nom', value: fullName),
-                  _SummaryRow(label: 'Email', value: email),
-                  _SummaryRow(label: 'Téléphone', value: phone),
+                  _SummaryRow(label: 'Nom', value: widget.fullName),
+                  _SummaryRow(label: 'Email', value: widget.email),
+                  _SummaryRow(label: 'Téléphone', value: widget.phone),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 20),
-          const _DocUploadTile(
+          _DocUploadTile(
             icon: Icons.badge_rounded,
             title: 'CNI / Passeport',
             subtitle: 'Recto + verso',
+            onFileSelected: (file) {
+              setState(() => _cniPhoto = file);
+              widget.onCniPhotoSelected(file);
+            },
           ),
           const SizedBox(height: 12),
-          const _DocUploadTile(
+          _DocUploadTile(
             icon: Icons.phone_android_rounded,
             title: 'Photo de profil',
             subtitle: 'Selfie clair et récent',
+            onFileSelected: (file) {
+              setState(() => _profilePhoto = file);
+              widget.onProfilePhotoSelected(file);
+            },
           ),
           if (isDriver) ...[
             const SizedBox(height: 12),
-            const _DocUploadTile(
-              icon: Icons.directions_car_rounded,
-              title: 'Carte grise du véhicule',
-              subtitle: 'Document officiel requis',
-            ),
-            const SizedBox(height: 12),
-            const _DocUploadTile(
+            _DocUploadTile(
               icon: Icons.card_membership_rounded,
               title: 'Permis de conduire',
               subtitle: 'En cours de validité',
+              onFileSelected: (file) {
+                setState(() => _licensePhoto = file);
+                widget.onLicensePhotoSelected?.call(file);
+              },
+            ),
+            const SizedBox(height: 12),
+            _DocUploadTile(
+              icon: Icons.directions_car_rounded,
+              title: 'Carte grise du véhicule',
+              subtitle: 'Document officiel requis',
+              onFileSelected: (file) {
+                setState(() => _registrationCard = file);
+                widget.onRegistrationCardSelected?.call(file);
+              },
             ),
           ],
-          if (isDriver && isPrime) ...[
+          if (isDriver && widget.isPrime) ...[
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(16),
@@ -652,15 +731,15 @@ class _Step3 extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: loading ? null : onFinish,
-              child: loading
+              onPressed: widget.loading ? null : widget.onFinish,
+              child: widget.loading
                   ? const SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
                   : Text(
-                      isPrime ? 'Créer le compte & poursuivre Prime' : 'Terminer l\'inscription',
+                      widget.isPrime ? 'Créer le compte & poursuivre Prime' : 'Terminer l\'inscription',
                     ),
             ),
           ),
@@ -844,16 +923,108 @@ class _SummaryRow extends StatelessWidget {
   }
 }
 
-class _DocUploadTile extends StatelessWidget {
+class _DocUploadTile extends StatefulWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final Function(File)? onFileSelected;
 
   const _DocUploadTile({
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.onFileSelected,
   });
+
+  @override
+  State<_DocUploadTile> createState() => _DocUploadTileState();
+}
+
+class _DocUploadTileState extends State<_DocUploadTile> {
+  File? _selectedFile;
+
+  Future<void> _pickFile() async {
+    try {
+      final mediaService = MediaService();
+      final file = await mediaService.pickImage(source: ImageSource.gallery);
+      
+      if (file != null) {
+        setState(() => _selectedFile = file);
+        widget.onFileSelected?.call(file);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: AppColors.coral,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded, color: AppColors.green),
+                title: const Text('Prendre une photo'),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    final mediaService = MediaService();
+                    final file = await mediaService.pickImage(source: ImageSource.camera);
+                    if (file != null) {
+                      setState(() => _selectedFile = file);
+                      widget.onFileSelected?.call(file);
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Erreur: $e'),
+                          backgroundColor: AppColors.coral,
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded, color: AppColors.green),
+                title: const Text('Choisir depuis la galerie'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickFile();
+                },
+              ),
+              if (_selectedFile != null) ...[
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.delete_rounded, color: AppColors.coral),
+                  title: const Text('Supprimer'),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    setState(() => _selectedFile = null);
+                  },
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -862,9 +1033,14 @@ class _DocUploadTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: cs.surface,
+        color: _selectedFile != null ? AppColors.greenLight.withValues(alpha: 0.3) : cs.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: cs.outline.withValues(alpha: 0.5), width: 0.8),
+        border: Border.all(
+          color: _selectedFile != null 
+              ? AppColors.green.withValues(alpha: 0.5)
+              : cs.outline.withValues(alpha: 0.5),
+          width: _selectedFile != null ? 2 : 0.8,
+        ),
       ),
       child: Row(
         children: [
@@ -872,10 +1048,14 @@ class _DocUploadTile extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: cs.surfaceContainerHighest,
+              color: _selectedFile != null ? AppColors.greenLight : cs.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: AppColors.green, size: 22),
+            child: Icon(
+              _selectedFile != null ? Icons.check_circle_rounded : widget.icon,
+              color: _selectedFile != null ? AppColors.green : AppColors.green,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -883,23 +1063,38 @@ class _DocUploadTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: cs.onSurface),
+                  widget.title,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurface,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                  _selectedFile != null ? 'Photo ajoutée ✓' : widget.subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _selectedFile != null ? AppColors.green : cs.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
           ),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: _showImageSourceDialog,
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              side: BorderSide(
+                color: _selectedFile != null ? AppColors.green : cs.outline,
+              ),
             ),
-            child: const Text('Ajouter'),
+            child: Text(
+              _selectedFile != null ? 'Modifier' : 'Ajouter',
+              style: TextStyle(
+                color: _selectedFile != null ? AppColors.green : cs.onSurface,
+              ),
+            ),
           ),
         ],
       ),
