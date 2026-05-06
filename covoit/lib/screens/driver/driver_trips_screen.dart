@@ -95,14 +95,28 @@ class _DriverTripsScreenState extends ConsumerState<DriverTripsScreen>
           ),
         ),
         data: (allTrips) {
+          final now = DateTime.now();
+          
+          // À venir: statut active ET départ dans le futur
           final active = allTrips
-              .where((t) => t.status == 'active')
+              .where((t) => 
+                  t.status == 'active' && 
+                  t.departureTime.isAfter(now))
               .toList();
+          
+          // En cours: statut active ET départ passé, OU statut ongoing
           final ongoing = allTrips
-              .where((t) => t.status == 'ongoing' || t.status == 'in_progress')
+              .where((t) => 
+                  (t.status == 'active' && t.departureTime.isBefore(now)) ||
+                  t.status == 'ongoing' || 
+                  t.status == 'in_progress')
               .toList();
+          
+          // Historique: completed ou cancelled
           final history = allTrips
-              .where((t) => t.status == 'completed' || t.status == 'cancelled')
+              .where((t) => 
+                  t.status == 'completed' || 
+                  t.status == 'cancelled')
               .toList();
 
           return TabBarView(
@@ -151,12 +165,12 @@ class _DriverTripList extends StatelessWidget {
   }
 }
 
-class _DriverTripCard extends StatelessWidget {
+class _DriverTripCard extends ConsumerWidget {
   final AppTrip trip;
   const _DriverTripCard({required this.trip});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final isPrime = trip.driver.isPrime;
     final accent = isPrime ? AppColors.prime : AppColors.green;
@@ -305,46 +319,65 @@ class _DriverTripCard extends StatelessWidget {
                 ],
               )
             else if (trip.status == 'ongoing' || trip.status == 'in_progress')
-              Row(
+              Column(
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => DriverPassengersScreen(
-                            tripId: trip.id,
-                            from: trip.from, to: trip.to,
-                            date: dateStr, time: timeStr,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => DriverPassengersScreen(
+                                tripId: trip.id,
+                                from: trip.from, to: trip.to,
+                                date: dateStr, time: timeStr,
+                              ),
+                            ),
                           ),
+                          icon: const Icon(Icons.people_rounded, size: 15),
+                          label: const Text('Passagers'),
+                          style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              textStyle: const TextStyle(fontSize: 12)),
                         ),
                       ),
-                      icon: const Icon(Icons.people_rounded, size: 15),
-                      label: const Text('Passagers'),
-                      style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          textStyle: const TextStyle(fontSize: 12)),
-                    ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => TripTrackingScreen(
+                                from: trip.from, to: trip.to,
+                                driverName: trip.driver.fullName,
+                                isPrime: trip.driver.isPrime,
+                                isDriver: true,
+                              ),
+                            ),
+                          ),
+                          icon: const Icon(Icons.map_rounded, size: 15),
+                          label: const Text('Suivi'),
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              textStyle: const TextStyle(fontSize: 12)),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => TripTrackingScreen(
-                            from: trip.from, to: trip.to,
-                            driverName: trip.driver.fullName,
-                            isPrime: trip.driver.isPrime,
-                            isDriver: true,
-                          ),
-                        ),
-                      ),
-                      icon: const Icon(Icons.map_rounded, size: 15),
-                      label: const Text('Suivi'),
+                      onPressed: () => _showCompleteConfirm(context, trip),
+                      icon: const Icon(Icons.check_circle_rounded, size: 15),
+                      label: const Text('Terminer le trajet'),
                       style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          textStyle: const TextStyle(fontSize: 12)),
+                        backgroundColor: AppColors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ),
                 ],
@@ -386,6 +419,57 @@ class _DriverTripCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _showCompleteConfirm(BuildContext context, AppTrip trip) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Terminer le trajet ?'),
+        content: Text(
+            'Marquer le trajet ${trip.from} → ${trip.to} comme terminé ?\n\nTous les passagers ont-ils été déposés ?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Annuler')),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _completeTrip(context, trip, ref);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.green,
+            ),
+            child: const Text('Terminer'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _completeTrip(BuildContext context, AppTrip trip, WidgetRef ref) async {
+    try {
+      await ref.read(journeyRepositoryProvider).completeTrip(trip.id);
+      ref.invalidate(driverTripsProvider);
+      
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Trajet terminé avec succès !'),
+            backgroundColor: AppColors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur : $e'),
+            backgroundColor: AppColors.coral,
+          ),
+        );
+      }
+    }
   }
 }
 

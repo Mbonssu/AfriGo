@@ -114,6 +114,7 @@ class ApiEndpoints {
   static String driverTrips(String driverId) => '$_trips/driver/$driverId';
   static String tripById(String id)          => '$_trips/$id';
   static String cancelTrip(String id)        => '$_trips/$id/cancel';
+  static String completeTrip(String id)      => '$_trips/$id/complete';
   static String tripPassengers(String id)    => '$_trips/$id/passengers';
   static const String popularRoutes          = '$_trips/popular';
 

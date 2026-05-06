@@ -623,3 +623,58 @@ async def get_driver_trips(driver_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Erreur serveur: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erreur serveur")
+
+
+# ============================================================================
+# ENDPOINT 7c : TERMINER UN TRAJET
+# ============================================================================
+
+@router.post(
+    "/{trip_id}/complete",
+    status_code=status.HTTP_200_OK,
+    summary="Marquer un trajet comme terminé",
+)
+async def complete_trip(
+    trip_id: UUID,
+    db: Session = Depends(get_db)
+):
+    """
+    Marque un trajet comme terminé (completed).
+    """
+    from datetime import datetime
+    from app.models.trip import Trip, TripStatus
+    
+    try:
+        logger.info(f"Terminer trajet {trip_id}")
+        
+        trip = db.query(Trip).filter(Trip.id == trip_id).first()
+        
+        if not trip:
+            logger.warning(f"Trajet non trouvé: {trip_id}")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Trajet non trouvé"
+            )
+        
+        trip.status = TripStatus.COMPLETED
+        trip.updated_at = datetime.utcnow()
+        
+        db.commit()
+        
+        logger.info(f"Trajet {trip_id} terminé")
+        
+        return {
+            "success": True,
+            "message": "Trajet terminé avec succès",
+            "trip_id": str(trip_id)
+        }
+    
+    except HTTPException:
+        raise
+    
+    except Exception as e:
+        logger.error(f"Erreur serveur: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )

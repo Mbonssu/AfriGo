@@ -259,6 +259,12 @@ class JourneyRepository {
     return _client.delete(ApiEndpoints.tripById(tripId));
   }
 
+  Future<void> completeTrip(String tripId) {
+    return _client.post<dynamic>(
+      ApiEndpoints.completeTrip(tripId),
+    );
+  }
+
 
   Future<AppBookingTrip> _hydrateBookingTrip(
       Map<String, dynamic> bookingJson) async {

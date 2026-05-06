@@ -430,3 +430,37 @@ async def get_driver_trips(driver_id: str):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Trip Service indisponible",
         )
+
+
+# =====================================================
+# ENDPOINT: TERMINER UN TRAJET
+# =====================================================
+
+@router.post("/{trip_id}/complete", status_code=status.HTTP_200_OK)
+async def complete_trip(trip_id: str):
+    """
+    Marque un trajet comme terminé.
+    Forward vers Trip Service.
+    """
+    try:
+        logger.info(f"Gateway: POST /api/trips/{trip_id}/complete → Trip Service")
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{settings.TRIP_SERVICE_URL}/trips/{trip_id}/complete"
+            )
+        
+        if response.status_code >= 400:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=response.json().get("detail", "Erreur lors de la complétion du trajet")
+            )
+        
+        return response.json()
+    
+    except httpx.RequestError as e:
+        logger.error(f"Erreur de connexion au Trip Service: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Service de trajets indisponible"
+        )
