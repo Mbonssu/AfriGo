@@ -75,9 +75,9 @@ async def create_trip(request: dict):
 
 @router.get("/search", status_code=status.HTTP_200_OK)
 async def search_trips(
-    # Query parameters (définis comme des paramètres)
-    from_city: str = Query(..., description="Ville de départ"),
-    to_city: str = Query(..., description="Ville d'arrivée"),
+    # Query parameters (optionnels pour permettre de charger tous les trajets)
+    from_city: str = Query(None, description="Ville de départ (optionnel)"),
+    to_city: str = Query(None, description="Ville d'arrivée (optionnel)"),
     departure_date: str = Query(None, description="Date de départ (YYYY-MM-DD, optionnel)"),
     passenger_count: int = Query(1, description="Nombre de passagers"),
     sort_by: str = Query("departure_time", description="Trier par: departure_time ou price")
@@ -94,13 +94,19 @@ async def search_trips(
         logger.info(f"Gateway: GET /api/trips/search - {from_city} → {to_city}")
         
         # Construire les query parameters à forwarder
-        # Inclure seulement les paramètres fournis
+        # Inclure seulement les paramètres fournis (non None et non vides)
         params = {
-            "from_city": from_city,
-            "to_city": to_city,
             "passenger_count": passenger_count,
             "sort_by": sort_by
         }
+        
+        # Ajouter from_city si fourni
+        if from_city:
+            params["from_city"] = from_city
+            
+        # Ajouter to_city si fourni
+        if to_city:
+            params["to_city"] = to_city
         
         # Ajouter departure_date si fourni
         if departure_date:
