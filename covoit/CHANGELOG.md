@@ -7,6 +7,87 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [1.0.0-phase3] - 2026-05-06
+
+### ✨ Ajouté
+
+#### Gestion des Photos
+- **Widget UserAvatar réutilisable** : Affichage uniforme des avatars dans toute l'application
+  - `UserAvatar` : Avatar simple avec photo ou initiales
+  - `PrimeUserAvatar` : Avatar avec badge Prime
+  - `VerifiedUserAvatar` : Avatar avec badge de vérification
+  - Construction automatique des URLs
+  - Gestion des erreurs de chargement
+
+- **Service de médias** : Sélection et capture de photos
+  - `MediaService` : Service pour prendre/choisir des photos
+  - Support caméra et galerie
+  - Sélection multiple de photos
+  - Dialogue de choix de source
+
+- **Upload de photos de profil** : Les utilisateurs peuvent ajouter leur photo
+  - Écran d'édition de profil (`edit_profile_screen.dart`)
+  - Upload pendant l'inscription
+  - Modification de la photo existante
+  - Prévisualisation avant upload
+
+- **Backend de gestion de fichiers** : Service complet d'upload
+  - `FileService` avec aiofiles pour opérations asynchrones
+  - Upload de photos de profil
+  - Upload de documents KYC (CNI, selfie, permis, carte grise)
+  - Upload de photos de véhicules
+  - Stockage organisé dans `/app/uploads/`
+
+- **Routes API pour les photos** :
+  - `POST /api/users/profile/{user_id}/photo` : Upload photo de profil
+  - `PUT /api/users/profile/{user_id}` : Mise à jour profil avec photo
+  - `POST /api/users/profile/{user_id}/kyc/verify` : Upload documents KYC
+  - `GET /api/users/uploads/profiles/{filename}` : Servir photos de profil
+  - `GET /api/users/uploads/kyc/{filename}` : Servir documents KYC
+  - `GET /api/users/uploads/vehicles/{filename}` : Servir photos de véhicules
+
+### 🔄 Modifié
+
+#### Avatars mis à jour (11 écrans)
+- **Écrans passagers** :
+  - `search_screen.dart` : Liste des trajets avec photos des chauffeurs
+  - `my_trips_screen.dart` : Mes réservations avec photos
+  - `chat_screen.dart` : Chat avec photo du chauffeur
+  - `rating_screen.dart` : Évaluation avec photo du chauffeur
+  - `passenger_home.dart` : Accueil avec photos des chauffeurs
+  - `trip_detail_screen.dart` : Détails du trajet avec photo
+
+- **Écrans chauffeurs** :
+  - `driver_home.dart` : Accueil avec photo de profil
+  - `driver_profile_screen.dart` : Profil public avec photo
+  - `driver_passengers_screen.dart` : Liste des passagers avec photos
+  - `prime_forum_screen.dart` : Forum avec avatars
+
+- **Écrans communs** :
+  - `trip_tracking_screen.dart` : Suivi du trajet avec photo
+  - `profile_screen.dart` : Profil utilisateur avec photo
+
+#### Modèles de données
+- `AppDriverProfile` : Ajout de `profilePictureUrl` et getter `initials`
+- `UserProfile` : Support des URLs de photos
+
+#### Base de données
+- Migration : Ajout de `license_photo_url` et `registration_card_url`
+
+### 📚 Documentation
+- `PHOTO_MANAGEMENT.md` : Documentation complète du système de photos
+- `PHOTO_MANAGEMENT_STATUS.md` : Statut d'implémentation détaillé
+
+### 📊 Statistiques Phase 3
+- **36 fichiers modifiés**
+- **2 910 insertions, 233 suppressions**
+- **11 écrans mis à jour** avec UserAvatar
+- **3 nouveaux widgets** créés
+- **1 nouveau service** (MediaService)
+- **95% des fonctionnalités photo** implémentées
+
+---
+
 ## [1.0.0-phase2] - 2026-05-06
 
 ### ✨ Ajouté
