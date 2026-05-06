@@ -33,6 +33,8 @@ class AppTripPassenger {
   String get initials => profile?.initials ?? '?';
 
   String get phone => profile?.phone ?? '';
+  
+  String? get photoUrl => profile?.profilePictureUrl;
 
   bool get isPaid => status == 'confirmed' || status == 'completed';
 }

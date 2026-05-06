@@ -82,13 +82,26 @@ class DriverProfileScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 40),
-                      PrimeUserAvatar(
+                      UserAvatar(
                         photoUrl: userProfile?.profilePictureUrl,
                         initials: initials,
                         radius: 48,
-                        isPrime: displayIsPrime,
                         backgroundColor: Colors.white.withOpacity(0.25),
                         textColor: Colors.white,
+                        badge: displayIsPrime
+                            ? Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.workspace_premium_rounded,
+                                  size: 20,
+                                  color: AppColors.prime,
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       Row(
