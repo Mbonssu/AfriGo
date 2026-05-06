@@ -395,7 +395,7 @@ class TripDetailScreen extends ConsumerWidget {
                           const _DetailRow(
                             icon: Icons.security_rounded,
                             label: 'Caution passager',
-                            value: '500 FCFA',
+                            value: '500 FCFA (incluse)',
                           ),
                           const Divider(height: 16),
                           _DetailRow(
@@ -441,7 +441,7 @@ class TripDetailScreen extends ConsumerWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'La caution de 500 FCFA est remboursée si le chauffeur annule. En cas d\'annulation de votre part, elle reste acquise.',
+                                'Le prix affiché inclut une caution de 500 FCFA. Elle est remboursée si le chauffeur annule. En cas d\'annulation de votre part, elle reste acquise.',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color:
@@ -486,7 +486,7 @@ class TripDetailScreen extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  '+ 500 FCFA de caution',
+                  'caution incluse',
                   style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
                 ),
               ],
@@ -551,7 +551,9 @@ class _BookingSheetState extends State<_BookingSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final total = widget.trip.pricePerSeat * _nbSeats + 500;
+    // Le prix affiché inclut déjà la caution de 500 FCFA
+    // Donc pas besoin d'ajouter 500, le total = prix × nombre de places
+    final total = widget.trip.pricePerSeat * _nbSeats;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -662,10 +664,11 @@ class _BookingSheetState extends State<_BookingSheet> {
                       ),
                     ),
                     const Text(
-                      '+ 500 FCFA de caution',
+                      '(caution de 500 FCFA incluse)',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: AppColors.greenDark,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
                   ],
